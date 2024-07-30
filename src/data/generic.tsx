@@ -31,7 +31,7 @@ export default {
   features: "Features",
   delete: "Delete",
   example: "Example",
-  edit: "Edit",
+  edit: "수정",
   cancelEdit: "Cancel Edit",
   deleteAll: "Delete All",
   create: "Create",
@@ -42,7 +42,7 @@ export default {
   video: "Videos",
   newsletter: "Newsletter",
   binding: "3rd Party Bindings",
-  liveDemo: "Live Demo",
+  liveDemo: "라이브 데모",
   control: (
     <>
       <Link href="/docs/useform/control">
