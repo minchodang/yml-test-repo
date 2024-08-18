@@ -254,11 +254,11 @@ export const getStartedLinks: Pages = [
     pathname: "#ReactWebVideoTutorial",
   },
   {
-    name: "필드 등록",
+    name: "Register fields",
     pathname: "#Registerfields",
   },
   {
-    name: "검증 적용",
+    name: "Apply validation",
     pathname: "#Applyvalidation",
   },
   {
@@ -282,7 +282,7 @@ export const getStartedLinks: Pages = [
     pathname: "#Integratingwithservices",
   },
   {
-    name: "에러 처리",
+    name: "Handle errors",
     pathname: "#Handleerrors",
   },
   {

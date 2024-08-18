@@ -1,6 +1,6 @@
 ---
 title: Get Started
-description: 리액트 훅 폼으로 간단한 양식 유효성 검사.
+description: 리액트 훅 form으로 간단한 양식 유효성 검사.
 sidebar: getStartedLinks
 ---
 
@@ -38,14 +38,14 @@ export default function App() {
   console.log(watch("example")) // 입력 값 관찰
 
   return (
-    /* "handleSubmit"은 "onSubmit"을 호출하기 전에 입력 값을 검증합니다. */
+    /* "handleSubmit"은 "onSubmit"을 호출하기 전에 입력 값을 validation합니다. */
     <form onSubmit={handleSubmit(onSubmit)}>
-      {/* "register" 함수를 호출하여 입력을 훅에 등록합니다. */}
+      {/* "register" 함수를 호출하여 입력을 훅에 register합니다. */}
       <input defaultValue="test" {...register("example")} />
 
-      {/* HTML 표준 검증 규칙을 사용하여 입력 검증을 포함합니다. */}
+      {/* HTML 표준 validation 규칙을 사용하여 입력 validation을 포함합니다. */}
       <input {...register("exampleRequired", { required: true })} />
-      {/* 필드 검증에 실패하면 errors가 반환됩니다. */}
+      {/* field validation에 실패하면 errors가 반환됩니다. */}
       {errors.exampleRequired && <span>This field is required</span>}
 
       <input type="submit" />
@@ -70,14 +70,14 @@ export default function App() {
   console.log(watch("example")) // 입력 값 관찰
 
   return (
-    /* "handleSubmit"은 "onSubmit"을 호출하기 전에 입력 값을 검증합니다. */
+    /* "handleSubmit"은 "onSubmit"을 호출하기 전에 입력 값을 validation합니다. */
     <form onSubmit={handleSubmit(onSubmit)}>
-      {/* "register" 함수를 호출하여 입력을 훅에 등록합니다. */}
+      {/* "register" 함수를 호출하여 입력을 훅에 register합니다. */}
       <input defaultValue="test" {...register("example")} />
 
-      {/* HTML 표준 검증 규칙을 사용하여 입력 검증을 포함합니다. */}
+      {/* HTML 표준 validation 규칙을 사용하여 입력 validation을 포함합니다. */}
       <input {...register("exampleRequired", { required: true })} />
-      {/* 필드 검증에 실패하면 errors가 반환됩니다. */}
+      {/* field validation에 실패하면 errors가 반환됩니다. */}
       {errors.exampleRequired && <span>This field is required</span>}
 
       <input type="submit" />
@@ -94,11 +94,11 @@ export default function App() {
 
 <YouTube youTubeId="RkXv4AXXC_4" />
 
-## 필드 등록 {#Registerfields}
+## Register field {#Registerfields}
 
-React Hook Form의 주요 개념 중 하나는 컴포넌트를 훅에 **`register`** 하는 것입니다. 이렇게 하면 해당 컴포넌트의 값이 폼 검증 및 제출에 사용될 수 있습니다.
+React Hook Form의 주요 개념 중 하나는 컴포넌트를 훅에 **`register`** 하는 것입니다. 이렇게 하면 해당 컴포넌트의 값이 form validation 및 제출에 사용될 수 있습니다.
 
-**참고:** 각 필드는 등록 과정에서 `name`이라는 키가 **`필요`** 합니다.
+**참고:** 각 field는 register 과정에서 `name`이라는 키가 **`필요`** 합니다.
 
 {/* JSTSCopy [CodeSandbox JS](https://codesandbox.io/s/react-hook-form-get-started-smspp) */}
 
@@ -162,11 +162,11 @@ export default function App() {
 
 </ TabGroup>
 
-## 검증 적용 {#Applyvalidation}
+## Apply validation {#Applyvalidation}
 
-React Hook Form은 기존 [HTML 표준 폼 검증](https://developer.mozilla.org/en-US/docs/Learn/HTML/Forms/Form_validation)을 따름으로써 폼 검증을 쉽게 만듭니다.
+React Hook Form은 기존 [HTML 표준 form validation](https://developer.mozilla.org/en-US/docs/Learn/HTML/Forms/Form_validation)을 따름으로써 form validation을 쉽게 만듭니다.
 
-지원되는 검증 규칙 목록:
+지원되는 validation 규칙 목록:
 
 - required
 - min
@@ -224,9 +224,9 @@ export default function App() {
 
 </TabGroup>
 
-## 기존 폼 통합 {#Integratinganexistingform}
+## 기존 form 통합 {#Integratinganexistingform}
 
-기존 폼을 통합하는 것은 간단합니다. 중요한 단계는 컴포넌트의 `ref`를 `register`하고 관련 속성을 입력에 할당하는 것입니다.
+기존 form을 통합하는 것은 간단합니다. 중요한 단계는 컴포넌트의 `ref`를 `register`하고 관련 속성을 입력에 할당하는 것입니다.
 
 <TabGroup buttonLabels={["TS", "JS"]} >
 
@@ -326,7 +326,7 @@ const App = () => {
 
 ## UI 라이브러리와 통합 {#IntegratingwithUIlibraries}
 
-React Hook Form은 외부 UI 컴포넌트 라이브러리와 쉽게 통합할 수 있습니다. 컴포넌트가 입력의 `ref`를 노출하지 않는 경우 Controller 컴포넌트를 사용하여 등록 과정을 처리할 수 있습니다.
+React Hook Form은 외부 UI 컴포넌트 라이브러리와 쉽게 통합할 수 있습니다. 컴포넌트가 입력의 `ref`를 노출하지 않는 경우 Controller 컴포넌트를 사용하여 register 과정을 처리할 수 있습니다.
 
 <TabGroup buttonLabels={["TS", "JS"]} >
 
@@ -426,7 +426,7 @@ const App = () => {
 
 ## 제어된 입력 통합 {#IntegratingControlledInputs}
 
-이 라이브러리는 비제어 컴포넌트와 기본 HTML 입력을 사용합니다. 그러나 [React-Select](https://github.com/JedWatson/react-select), [AntD](https://github.com/ant-design/ant-design) 및 [MUI](https://mui.com/)와 같은 외부 제어 컴포넌트와 작업하는 것을 피하기는 어렵습니다. 이를 간단하게 만들기 위해, 우리는 [Controller](/docs#Controller) 컴포넌트를 제공하여 등록 과정을 간소화하면서도 사용자 정의 등록을 사용할 수 있는 자유를 제공합니다.
+이 라이브러리는 비제어 컴포넌트와 기본 HTML 입력을 사용합니다. 그러나 [React-Select](https://github.com/JedWatson/react-select), [AntD](https://github.com/ant-design/ant-design) 및 [MUI](https://mui.com/)와 같은 외부 제어 컴포넌트와 작업하는 것을 피하기는 어렵습니다. 이를 간단하게 만들기 위해, 우리는 [Controller](/docs#Controller) 컴포넌트를 제공하여 register 과정을 간소화하면서도 사용자 정의 register을 사용할 수 있는 자유를 제공합니다.
 
 #### 컴포넌트 API 사용
 
@@ -599,9 +599,9 @@ connect(
 )(YourForm)
 ```
 
-## 오류 처리 {#Handleerrors}
+## Handle errors {#Handleerrors}
 
-React Hook Form은 폼의 오류를 표시하기 위한 `errors` 객체를 제공합니다. `errors` 타입은 주어진 검증 제약 조건을 반환합니다. 다음 예제는 필수 검증 규칙을 보여줍니다.
+React Hook Form은 form의 오류를 표시하기 위한 `errors` 객체를 제공합니다. `errors` 타입은 주어진 validation 제약 조건을 반환합니다. 다음 예제는 필수 validation 규칙을 보여줍니다.
 
 ```javascript copy sandbox="https://codesandbox.io/s/react-hook-form-v7-errormessage-multiple-error-messages-3ur2z"
 import { useForm } from "react-hook-form"
@@ -638,7 +638,7 @@ export default function App() {
 
 ## 서비스와 통합 {#Integratingwithservices}
 
-React Hook Form을 서비스와 통합하려면, 라이브러리의 내장 제출 처리를 사용할 수 있습니다. `<Form />` 컴포넌트는 폼 데이터를 API 엔드포인트나 다른 서비스에 쉽게 보낼 수 있습니다. [Form 컴포넌트에 대해 자세히 알아보기](/docs/useform/form).
+React Hook Form을 서비스와 통합하려면, 라이브러리의 내장 제출 처리를 사용할 수 있습니다. `<Form />` 컴포넌트는 form 데이터를 API 엔드포인트나 다른 서비스에 쉽게 보낼 수 있습니다. [Form 컴포넌트에 대해 자세히 알아보기](/docs/useform/form).
 
 ```javascript
 import { Form } from "react-hook-form"
@@ -666,9 +666,9 @@ function App() {
 }
 ```
 
-## 스키마 검증 {#SchemaValidation}
+## 스키마 validation {#SchemaValidation}
 
-우리는 [Yup](https://github.com/jquense/yup), [Zod](https://github.com/vriad/zod) , [Superstruct](https://github.com/ianstormtaylor/superstruct) 및 [Joi](https://github.com/hapijs/joi)와 같은 스키마 기반 폼 검증도 지원합니다. `schema`를 [useForm](/docs#useForm)의 옵션으로 전달하여 입력 데이터를 스키마에 맞게 검증하고, [errors](/docs#errors) 또는 유효한 결과를 반환합니다.
+우리는 [Yup](https://github.com/jquense/yup), [Zod](https://github.com/vriad/zod) , [Superstruct](https://github.com/ianstormtaylor/superstruct) 및 [Joi](https://github.com/hapijs/joi)와 같은 스키마 기반 form validation도 지원합니다. `schema`를 [useForm](/docs#useForm)의 옵션으로 전달하여 입력 데이터를 스키마에 맞게 validation하고, [errors](/docs#errors) 또는 유효한 결과를 반환합니다.
 
 **단계 1:** 프로젝트에 Yup을 설치합니다.
 
@@ -676,7 +676,7 @@ function App() {
 npm install @hookform/resolvers yup
 ```
 
-**단계 2:** 검증을 위한 스키마를 준비하고 React Hook Form에 입력을 등록합니다.
+**단계 2:** validation을 위한 스키마를 준비하고 React Hook Form에 입력을 register합니다.
 
 ```javascript copy sandbox="https://codesandbox.io/s/react-hook-form-v7-validationschema-rm35t"
 import { useForm } from "react-hook-form"
@@ -778,7 +778,7 @@ export default function App() {
 
 ## TypeScript {#TypeScript}
 
-React Hook Form은 `TypeScript`로 빌드되었으며, 폼 값을 지원하기 위해 `FormData` 타입을 정의할 수 있습니다.
+React Hook Form은 `TypeScript`로 빌드되었으며, form 값을 지원하기 위해 `FormData` 타입을 정의할 수 있습니다.
 
 ```typescript copy sandbox="https://codesandbox.io/s/react-hook-form-typescript-qwk7b"
 import * as React from "react"
@@ -822,13 +822,13 @@ export default function App() {
 
 ## 디자인과 철학 {#Designandphilosophy}
 
-React Hook Form의 디자인과 철학은 사용자와 개발자의 경험에 중점을 둡니다. 라이브러리는 성능을 미세 조정하고 접근성을 향상시켜 사용자에게 더 부드러운 상호 작용 경험을 제공하는 것을 목표로 합니다. 성능 향상의 일부는 다음과 같습니다:
+React Hook Form의 디자인과 철학은 사용자와 개발자의 경험에 중점을 둡니다. 라이브러리는 성능을 미세하게 조정하고 접근성을 향상시켜 사용자에게 더 부드러운 상호 작용 경험을 제공하는 것을 목표로 합니다. 성능 향상의 일부는 다음과 같습니다:
 
-- 프록시를 통한 폼 상태 구독 모델 도입
+- 프록시를 통한 form 상태 구독 모델 도입
 - 불필요한 계산 방지
-- 필요한 경우에만 컴포넌트 재렌더링 격리
+- 필요한 경우에만 컴포넌트 리렌더링 격리
 
-전반적으로, 이는 사용자가 애플리케이션과 상호 작용할 때 사용자 경험을 향상시킵니다. 개발자를 위해, 내장된 검증을 제공하고 HTML 표준과 긴밀하게 일치하여 강력한 검증 방법과 스키마 검증과의 통합을 더욱 확장할 수 있도록 합니다. 또한, TypeScript의 강력한 타입 검사를 통해 개발자에게 초기 빌드 시간 피드백을 제공하여 견고한 폼 솔루션을 구축하는 데 도움을 줍니다.
-다음 강연에서는 [Bill](https://twitter.com/bluebill1049)이 일부 아이디어와 디자인 패턴을 소개합니다:
+전반적으로, 이는 사용자가 애플리케이션과 상호 작용할 때 사용자 경험을 향상시킵니다. 개발자를 위해, 내장된 validation을 제공하고 HTML 표준과 긴밀하게 일치하여 강력한 validation 방법과 스키마 validation과의 통합을 더욱 확장할 수 있도록 합니다. 또한, TypeScript의 강력한 타입 검사를 통해 개발자에게 초기 빌드 시간 피드백을 제공하여 견고한 form 솔루션을 구축하는 데 도움을 줍니다.
+다음 논의에서는 [Bill](https://twitter.com/bluebill1049)이 일부 아이디어와 디자인 패턴을 소개합니다:
 
 <YouTube youTubeId="ZFxHdpzaEmM" />
