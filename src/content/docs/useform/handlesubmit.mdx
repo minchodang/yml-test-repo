@@ -1,35 +1,35 @@
 ---
 title: handleSubmit
-description: Ready to send to the server
+description: 서버로 전송 준비
 sidebar: apiLinks
 ---
 
 ## \</> `handleSubmit:` <TypeText>`((data: Object, e?: Event) => Promise<void>, (errors: Object, e?: Event) => Promise<void>) => Promise<void>`</TypeText>
 
-This function will receive the form data if form validation is successful.
+이 함수는 form 유효성 검사를 통과하면, form 데이터를 수신합니다.
 
 ### Props
 
 ---
 
-| Name               | Type                                                                | Description            |
-| ------------------ | ------------------------------------------------------------------- | ---------------------- |
-| SubmitHandler      | <TypeText>`(data: Object, e?: Event) => Promise<void>`</TypeText>   | A successful callback. |
-| SubmitErrorHandler | <TypeText>`(errors: Object, e?: Event) => Promise<void>`</TypeText> | An error callback.     |
+| Name               | Type                                                                | Description    |
+| ------------------ | ------------------------------------------------------------------- | -------------- |
+| SubmitHandler      | <TypeText>`(data: Object, e?: Event) => Promise<void>`</TypeText>   | 성공 callback. |
+| SubmitErrorHandler | <TypeText>`(errors: Object, e?: Event) => Promise<void>`</TypeText> | 에러 callback. |
 
 <Admonition type="important" title="Rules">
 
-- You can easily submit form asynchronously with handleSubmit.
+- handleSubmit을 사용하면 form을 비동기적으로 쉽게 제출할 수 있습니다.
 
   ```javascript copy
   handleSubmit(onSubmit)()
 
-  // You can pass an async function for asynchronous validation.
+  // 비동기 유효성 검사를 위해 async 함수를 전달할 수 있습니다.
   handleSubmit(async (data) => await fetchAPI(data))
   ```
 
-- `disabled` inputs will appear as `undefined` values in form values. If you want to prevent users from updating an input and wish to retain the form value, you can use `readOnly` or disable the entire &lt;fieldset /&gt;. Here is an [example](https://codesandbox.io/s/react-hook-form-disabled-inputs-oihxx).
-- `handleSubmit` function will not swallow errors that occurred inside your onSubmit callback, so we recommend you to try and catch inside async request and handle those errors gracefully for your customers.
+- `disabled`된 input은 form 값에서 `undefined`로 나타납니다. input을 사용자가 수정하지 못하게 하면서 값을 유지하려면, `readOnly`를 사용하거나 전체 &lt;fieldset /&gt;을 disabled할 수 있습니다. [예시](https://codesandbox.io/s/react-hook-form-disabled-inputs-oihxx)를 참고하세요.
+- `handleSubmit` 함수는 onSubmit 콜백 내부에서 발생한 에러를 처리하지 않으므로, 비동기 요청에서 에러를 처리할 때는 try-catch를 사용하여 고객에게 에러를 친절하게 처리해 주는 것을 권장합니다.
 
   ```javascript
   const onSubmit = async () => {
@@ -39,9 +39,8 @@ This function will receive the form data if form validation is successful.
     } catch (e) {
       // handle your error
     }
-  };
-
-  <form onSubmit={handleSubmit(onSubmit)} />
+  }
+  ;<form onSubmit={handleSubmit(onSubmit)} />
   ```
 
 </Admonition>
@@ -134,6 +133,6 @@ function App() {
 
 ---
 
-The following video tutorial explains the `handleSubmit` API in detail.
+다음 동영상 튜토리얼에서는 `handleSubmit` API에 대해 자세히 설명합니다.
 
 <YouTube youTubeId="KzcPKB9SOEk" />
