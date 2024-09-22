@@ -1,26 +1,26 @@
 ---
 title: setFocus
-description: Manually set an input focus
+description: 입력 포커스 수동 설정
 sidebar: apiLinks
 ---
 
 ## `setFocus:` <TypeText>(name: string, options: SetFocusOptions) => void</TypeText>
 
-This method will allow users to programmatically focus on input. Make sure input's ref is registered into the hook form.
+이 메서드는 사용자가 프로그래밍적으로 입력 필드에 포커스를 설정할 수 있도록 합니다. 입력 필드의 ref가 훅 폼에 등록되었는지 확인하세요.
 
 ### Props
 
 ---
 
-| Name      |                | Type                         | Description                                   |
-| --------- | -------------- | ---------------------------- | --------------------------------------------- |
-| `name`    |                | <TypeText>string</TypeText>  | A input field name to focus                   |
-| `options` | `shouldSelect` | <TypeText>boolean</TypeText> | Whether to select the input content on focus. |
+| Name      |                | Type                         | Description                          |
+| --------- | -------------- | ---------------------------- | ------------------------------------ |
+| `name`    |                | <TypeText>string</TypeText>  | 포커스를 설정할 입력 필드의 이름.    |
+| `options` | `shouldSelect` | <TypeText>boolean</TypeText> | 포커스 시 입력 내용을 선택할지 여부. |
 
 <Admonition type="important" title="Rules">
 
-- This API will invoke focus method from the ref, so it's important to provide `ref` during `register`.
-- Avoid calling `setFocus` right after `reset` as all input references will be removed by `reset` API.
+- 이 API는 ref에서 focus 메서드를 호출하므로, `register` 시 반드시 `ref`를 제공해야 합니다.
+- `reset` API 사용 직후 `setFocus`를 호출하지 마세요.`reset`으로 인해 모든 입력 필드의 ref가 제거되기 때문입니다.
 
 </Admonition>
 
