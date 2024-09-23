@@ -1,27 +1,27 @@
 ---
 title: trigger
-description: Trigger validation across the form
+description: form 전체에서 유효성 검사 트리거
 sidebar: apiLinks
 ---
 
 ## `trigger:` <TypeText>`(name?: string | string[]) => Promise<boolean>`</TypeText>
 
-Manually triggers form or input validation. This method is also useful when you have dependant validation (input validation depends on another input's value).
+form 또는 input의 유효성 검사를 수동으로 트리거합니다. 이 method는 의존적인 유효성 검사가 있는 경우(입력 유효성 검사가 다른 입력 값에 의존하는 경우)에도 유용합니다.
 
 ### Props
 
 ---
 
-| Name        | Type                           | Description                                                                                                                                             | Example                                  |
-| ----------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
-| name        | <TypeText>undefined</TypeText> | Triggers validation on all fields.                                                                                                                      | `trigger()`                              |
-|             | <TypeText>string</TypeText>    | Triggers validation on a specific field value by **name**                                                                                               | `trigger("yourDetails.firstName")`       |
-|             | <TypeText>string[]</TypeText>  | Triggers validation on multiple fields by **name**.                                                                                                     | `trigger(["yourDetails.lastName"])`      |
-| shouldFocus | <TypeText>boolean</TypeText>   | Should focus the input during setting an error. This only works when the input's reference is registered, it will not work for custom register as well. | `trigger('name', { shouldFocus: true })` |
+| Name        | Type                           | Description                                                                                                                            | Example                                  |
+| ----------- | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| name        | <TypeText>undefined</TypeText> | 모든 필드에서 유효성 검사 트리거.                                                                                                      | `trigger()`                              |
+|             | <TypeText>string</TypeText>    | **name**으로 특정 필드 값에 대한 유효성 검사를 트리거합니다.                                                                           | `trigger("yourDetails.firstName")`       |
+|             | <TypeText>string[]</TypeText>  | **name**으로 여러 필드에 대한 유효성 검사를 트리거합니다.                                                                              | `trigger(["yourDetails.lastName"])`      |
+| shouldFocus | <TypeText>boolean</TypeText>   | 오류를 설정하는 동안 입력에 초점을 맞춰야 합니다. 입력의 참조가 registered된 경우에만 작동하며, custom register에는 작동하지 않습니다. | `trigger('name', { shouldFocus: true })` |
 
 <Admonition type="important" title="Rules">
 
-Isolate render optimisation only applicable for targeting a single field name with `string` as payload, when supplied with `array` and `undefined` to trigger will re-render the entire formState.
+분리 렌더링 최적화는 페이로드가 `string`인 단일 필드 이름을 대상으로 하는 경우에만 적용되며, 트리거에 `array`과 `undefined`를 제공하면 전체 formState를 다시 렌더링합니다.
 
 </Admonition>
 
@@ -99,7 +99,7 @@ export default function App() {
         type="button"
         onClick={async () => {
           const result = await trigger("lastName")
-          // const result = await trigger("lastName", { shouldFocus: true }); allowed to focus input
+          // const result = await trigger("lastName", { shouldFocus: true }); 입력 focus 허용
         }}
       >
         Trigger
@@ -131,6 +131,6 @@ export default function App() {
 
 ---
 
-The following video explain `trigger` API in detail.
+다음 동영상에서는 `trigger` API에 대해 자세히 설명합니다.
 
 <YouTube youTubeId="-bcyJCDjksE" />
