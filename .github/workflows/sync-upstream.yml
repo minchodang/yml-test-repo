@@ -1,0 +1,122 @@
+name: Sync Upstream and Create PR
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *" # 매일 밤 12시 정각에 실행
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+      - name: Checkout Fork
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "minchodang"
+          git config user.email "minsu910725@gmail.com"
+
+      - name: Fetch Upstream
+        run: |
+          git remote add upstream https://github.com/kode-krew/meta-test-be.git
+          git fetch upstream
+          git fetch origin
+
+      - name: Check for Changes
+        id: changes
+        run: |
+          if git diff --quiet origin/master upstream/master; then
+            echo "changes=false" >> $GITHUB_ENV
+          else
+            echo "changes=true" >> $GITHUB_ENV
+          fi
+
+      - name: Check Existing PRs
+        id: existing-prs
+        run: |
+          # Fetch existing PRs
+          RESPONSE=$(curl -s \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/repos/${{ github.repository }}/pulls)
+
+          # Filter the response to get PRs starting with "sync-upstream-"
+          EXISTING_PR=$(echo "$RESPONSE" | jq -r '.[] | select(.head.ref | startswith("sync-upstream-")) | .head.ref' | tr '\n' ' ')
+
+          if [[ -n "$EXISTING_PR" ]]; then
+              echo "existing_pr=true" >> $GITHUB_ENV
+              echo "existing_pr_ref=$EXISTING_PR" >> $GITHUB_ENV
+          else
+              echo "existing_pr=false" >> $GITHUB_ENV
+          fi
+
+      - name: Compare Changes with Each Existing PR
+        id: compare-changes
+        if: env.existing_pr == 'true' && env.changes == 'true'
+        run: |
+          ALL_EXISTING_INCLUDED=true
+          for pr_ref in ${{ env.existing_pr_ref }}
+          do
+            echo "Fetching branch: $pr_ref"
+            git fetch origin "$pr_ref:$pr_ref-branch"
+
+            echo "Comparing with upstream/master"
+            if ! git diff --quiet upstream/master "$pr_ref-branch"; then
+              ALL_EXISTING_INCLUDED=false
+              break
+            fi
+          done
+
+          if [ "$ALL_EXISTING_INCLUDED" = true ]; then
+            echo "diff=false" >> $GITHUB_ENV
+          else
+            echo "diff=true" >> $GITHUB_ENV
+
+            # Close all existing PRs
+            for pr_ref in ${{ env.existing_pr_ref }}
+            do
+              PR_NUMBER=$(curl -s \
+                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                -H "Accept: application/vnd.github.v3+json" \
+                https://api.github.com/repos/${{ github.repository }}/pulls \
+                | jq -r '.[] | select(.head.ref=="'$pr_ref'") | .number')
+
+              curl -X PATCH \
+                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                -H "Accept: application/vnd.github.v3+json" \
+                https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER \
+                -d '{"state":"closed"}'
+            done
+          fi
+
+      - name: Create Branch and Rebase Changes
+        if: env.diff == 'true' || env.existing_pr == 'false'
+        run: |
+          BRANCH_NAME=sync-upstream-$(date +%Y%m%d%H%M%S)
+          git checkout -b $BRANCH_NAME origin/master
+          git rebase upstream/master
+          git push origin $BRANCH_NAME --force-with-lease
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+
+      - name: Create Pull Request
+        if: env.diff == 'true' || env.existing_pr == 'false'
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/pulls \
+            -d '{
+              "title": "Sync with upstream",
+              "body": "This PR syncs the fork with upstream repository",
+              "head": "'"${{ env.BRANCH_NAME }}"'",
+              "base": "master"
+            }'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
