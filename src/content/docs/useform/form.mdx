@@ -1,6 +1,6 @@
 ---
 title: Form
-description: form 제출 관리
+description: form submission 관리
 sidebar: apiLinks
 ---
 
@@ -8,13 +8,13 @@ sidebar: apiLinks
 
 **Note**: 이 component는 현재 **BETA**입니다.
 
-이 component는 선택 사항이며 표준 native form과 유사하게 form 제출을 처리합니다.
+이 component는 선택 사항이며 표준 native form과 유사하게 form submission을 처리합니다.
 
-기본적으로, form 제출 데이터는 [FormData](https://developer.mozilla.org/en-US/docs/Web/API/FormData)로 POST 요청을 보냅니다. FormData를 제출하지 않으려면 `headers` props를 제공하고 대신 `application/json`을 사용할 수 있습니다.
+기본적으로, form submission 데이터는 [FormData](https://developer.mozilla.org/en-US/docs/Web/API/FormData)로 POST 요청을 보냅니다. FormData를 submission하지 않으려면 `headers` props를 제공하고 대신 `application/json`을 사용할 수 있습니다.
 
 - 폼을 점진적으로 개선합니다.
 - 리액트 웹과 리액트 네이티브를 모두 지원합니다.
-- form 제출 처리를 관리합니다.
+- form submission 처리를 관리합니다.
 
 ```javascript
 <Form
@@ -33,32 +33,32 @@ sidebar: apiLinks
 
 모든 props는 optional입니다.
 
-| Name             | Type                                               | Description                                                                                                                                         | Example                                                                                                            |
-| ---------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `control`        | <TypeText>`Control`</TypeText>                     | `useForm`을 호출하여 제공된 [`control`](/docs/useform/control) 객체. `FormProvider`를 사용할 경우 선택 사항.                                        | <CodeArea withOutCopy rawData="<Form control={control} />"/>                                                       |
-| `children`       | <TypeText>`React.ReactNode`</TypeText>             |                                                                                                                                                     |
-| `render`         | <TypeText>`Function`</TypeText>                    | headless component에 적합한 Render prop.                                                                                                            | <CodeArea withOutCopy rawData="<Form render={({ submit }) => <View/>} />" />                                       |
-| `onSubmit`       | <TypeText>`Function`</TypeText>                    | 유효성 검사 성공 후 호출되는 함수.                                                                                                                  | <CodeArea withOutCopy rawData="<Form onSubmit={({ data }) => mutation(data)} />"/>                                 |
-| `onSuccess`      | <TypeText>`Function`</TypeText>                    | 서버 요청 성공 후 호출되는 함수.                                                                                                                    | <CodeArea withOutCopy rawData="<Form onSuccess={({ response }) => {}} />" />                                       |
-| `onError`        | <TypeText>`Function`</TypeText>                    | 서버에 대한 요청 실패 후 호출되는 함수. <br/><br/>`setError` 함수는 오류 상태를 업데이트하기 위해 호출됩니다. `root.server`가 에러 키로 사용됩니다. | <CodeArea withOutCopy rawData="<Form onError={({ response }) => {}} />" />                                         |
-| `headers`        | <TypeText>`Record<string, string>`</TypeText>      | 요청 헤더 객체.                                                                                                                                     | <CodeArea withOutCopy rawData="<Form headers={{ accessToken:  'xxx', 'Content-Type':  'application/json'  }} />"/> |
-| `validateStatus` | <TypeText>`(status: number) => boolean`</TypeText> | status code 유효성 검사 함수.                                                                                                                       | <CodeArea withOutCopy rawData="<Form validateStatus={status => status === 200} />" />                              |
+| Name             | Type                                               | Description                                                                                                                                  | Example                                                                                                            |
+| ---------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `control`        | <TypeText>`Control`</TypeText>                     | `useForm`을 호출하여 제공된 [`control`](/docs/useform/control) 객체. `FormProvider`를 사용할 경우 선택 사항.                                 | <CodeArea withOutCopy rawData="<Form control={control} />"/>                                                       |
+| `children`       | <TypeText>`React.ReactNode`</TypeText>             |                                                                                                                                              |
+| `render`         | <TypeText>`Function`</TypeText>                    | headless component에 적합한 Render prop.                                                                                                     | <CodeArea withOutCopy rawData="<Form render={({ submit }) => <View/>} />" />                                       |
+| `onSubmit`       | <TypeText>`Function`</TypeText>                    | 유효성 검사 성공 후 호출되는 함수.                                                                                                           | <CodeArea withOutCopy rawData="<Form onSubmit={({ data }) => mutation(data)} />"/>                                 |
+| `onSuccess`      | <TypeText>`Function`</TypeText>                    | 서버 요청 성공 후 호출되는 함수.                                                                                                             | <CodeArea withOutCopy rawData="<Form onSuccess={({ response }) => {}} />" />                                       |
+| `onError`        | <TypeText>`Function`</TypeText>                    | 서버 요청 실패 후 호출되는 함수. <br/><br/>`setError` 함수는 오류 상태를 업데이트하기 위해 호출됩니다. `root.server`가 에러 키로 사용됩니다. | <CodeArea withOutCopy rawData="<Form onError={({ response }) => {}} />" />                                         |
+| `headers`        | <TypeText>`Record<string, string>`</TypeText>      | 요청 헤더 객체.                                                                                                                              | <CodeArea withOutCopy rawData="<Form headers={{ accessToken:  'xxx', 'Content-Type':  'application/json'  }} />"/> |
+| `validateStatus` | <TypeText>`(status: number) => boolean`</TypeText> | status code 유효성 검사 함수.                                                                                                                | <CodeArea withOutCopy rawData="<Form validateStatus={status => status === 200} />" />                              |
 
 <Admonition type="important" title="Rules">
 
-- 제출 데이터를 준비하거나 생략하려면, [`handleSubmit`](/docs/useform/handlesubmit) or `onSubmit`을 사용하세요.
+- submission 데이터를 준비하거나 생략하려면, [`handleSubmit`](/docs/useform/handlesubmit) or `onSubmit`을 사용하세요.
   ```javascript
   const { handleSubmit, control } = useForm();
   const onSubmit =(data) => callback(prepareData(data))
   <form onSubmit={handleSubmit(onSubmit)} />
-  // or
+  // 혹은
   <Form
     onSubmit={({ data }) => {
       console.log(data)
     }}
   />
   ```
-- Progressive Enhancement는 SSR framework에만 적용됩니다.
+- Progressive Enhancement는 SSR 프레임워크에만 적용됩니다.
 
   ```javascript
   const { handleSubmit, control } = useForm({
@@ -69,7 +69,7 @@ sidebar: apiLinks
     <input {...register("test", { required: true })} />
   </Form  />
 
-  // Renders
+  // 렌더
 
   <form action="/api/test" method="post">
     <input required name="test" />
@@ -116,7 +116,7 @@ function App() {
         {isSubmitSuccessful && <p>Form submit successful.</p>}
         {errors?.root?.server && <p>Form submit failed.</p>} <button>submit</button>
       </Form>
-      // 수동 form 제출
+      // 수동 form submission
       <Form
         onSubmit={async ({ formData, data, formDataJson, event }) => {
           await fetch("api", {
