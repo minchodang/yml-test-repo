@@ -1,39 +1,39 @@
 ---
 title: clearErrors
-description: Clear form errors
+description: 폼 에러 제거
 sidebar: apiLinks
 ---
 
 ## \</> `clearErrors:` <TypeText>(name?: string | string[]) => void</TypeText>
 
-This function can manually clear errors in the form.
+이 함수는 폼의 에러를 직접 제거할 수 있습니다.
 
 ### Props
 
 ---
 
-| Type                           | Description             | Example                                 |
-| ------------------------------ | ----------------------- | --------------------------------------- |
-| <TypeText>undefined</TypeText> | Remove all errors.      | `clearErrors()`                         |
-| <TypeText>string</TypeText>    | Remove single error.    | `clearErrors("yourDetails.firstName")`  |
-| <TypeText>string[]</TypeText>  | Remove multiple errors. | `clearErrors(["yourDetails.lastName"])` |
+| Type                           | Description       | Example                                 |
+| ------------------------------ | ----------------- | --------------------------------------- |
+| <TypeText>undefined</TypeText> | 모든 에러 제거.   | `clearErrors()`                         |
+| <TypeText>string</TypeText>    | 하나의 에러 제거. | `clearErrors("yourDetails.firstName")`  |
+| <TypeText>string[]</TypeText>  | 여러 에러 제거.   | `clearErrors(["yourDetails.lastName"])` |
 
-- `undefined`: reset all errors
-- `string`: reset the error on a single field or by key name.
+- `undefined`: 모든 에러를 초기화합니다.
+- `string`: 하나의 필드 또는 키 이름으로 에러를 초기화합니다.
 
   ```javascript
   register("test.firstName", { required: true })
   register("test.lastName", { required: true })
-  clearErrors("test") // will clear both errors from test.firstName and test.lastName
-  clearErrors("test.firstName") // for clear single input error
+  clearErrors("test") // test.firstName 및 test.lastName의 모든 에러를 제거
+  clearErrors("test.firstName") // 하나의 입력 에러 제거
   ```
 
-- `string[]`: reset errors on the given fields
+- `string[]`: 주어진 필드의 오류를 초기화합니다.
 
-<Admonition type="important" title="Rules">
+<Admonition type="important" title="규칙">
 
-- This will not affect the validation rules attached to each inputs.
-- This method doesn't affect validation rules or `isValid` formState.
+- 이 메소드는 각 입력 필드에 연결된 유효성 검사 규칙에는 영향을 주지 않습니다.
+- 이 메소드는 유효성 검사 규칙이나 `isValid` formState에는 영향을 미치지 않습니다.
 
 </Admonition>
 
