@@ -25,7 +25,7 @@ jobs:
 
       - name: Fetch Upstream
         run: |
-          git remote add upstream https://github.com/kode-krew/meta-test-be.git
+          git remote add upstream https://github.com/react-hook-form/documentation
           git fetch upstream
           git fetch origin
 
