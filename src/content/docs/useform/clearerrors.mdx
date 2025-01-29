@@ -12,20 +12,20 @@ sidebar: apiLinks
 
 ---
 
-| Type                           | Description     | Example                                 |
-| ------------------------------ | --------------- | --------------------------------------- |
-| <TypeText>undefined</TypeText> | 모든 에러 제거. | `clearErrors()`                         |
-| <TypeText>string</TypeText>    | 단일 에러 제거. | `clearErrors("yourDetails.firstName")`  |
-| <TypeText>string[]</TypeText>  | 여러 에러 제거. | `clearErrors(["yourDetails.lastName"])` |
+| Type                           | Description       | Example                                 |
+| ------------------------------ | ----------------- | --------------------------------------- |
+| <TypeText>undefined</TypeText> | 모든 에러 제거.   | `clearErrors()`                         |
+| <TypeText>string</TypeText>    | 하나의 에러 제거. | `clearErrors("yourDetails.firstName")`  |
+| <TypeText>string[]</TypeText>  | 여러 에러 제거.   | `clearErrors(["yourDetails.lastName"])` |
 
 - `undefined`: 모든 에러를 초기화합니다.
-- `string`: 단일 필드 또는 키 이름으로 에러를 초기화합니다.
+- `string`: 하나의 필드 또는 키 이름으로 에러를 초기화합니다.
 
   ```javascript
   register("test.firstName", { required: true })
   register("test.lastName", { required: true })
   clearErrors("test") // test.firstName 및 test.lastName의 모든 에러를 제거
-  clearErrors("test.firstName") // 단일 입력 에러 제거
+  clearErrors("test.firstName") // 하나의 입력 에러 제거
   ```
 
 - `string[]`: 주어진 필드의 오류를 초기화합니다.
