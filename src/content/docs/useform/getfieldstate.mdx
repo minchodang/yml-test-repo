@@ -1,6 +1,6 @@
 ---
 title: getFieldState
-description: field의 상태
+description: 필드의 상태
 sidebar: apiLinks
 ---
 
@@ -12,10 +12,10 @@ sidebar: apiLinks
 
 ---
 
-| Name      | Type                          | Description                                                                                                                                              |
-| --------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`    | <TypeText>`string`</TypeText> | 등록된 필드 이름.                                                                                                                                        |
-| formState | <TypeText>`object`</TypeText> | 선택적인 prop으로, useForm, useFormContext, 또는 useFormState에서 formState를 읽거나 구독하지 않는 경우에만 필요합니다. 자세한 내용은 rule을 참조하세요. |
+| Name      | Type                          | Description                                                                                                                                               |
+| --------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`    | <TypeText>`string`</TypeText> | 등록된 필드 이름.                                                                                                                                         |
+| formState | <TypeText>`object`</TypeText> | 선택적인 prop으로, useForm, useFormContext, 또는 useFormState에서 formState를 읽거나 구독하지 않는 경우에만 필요합니다. 자세한 내용은 rules를 참조하세요. |
 
 ### Return
 
@@ -36,7 +36,7 @@ sidebar: apiLinks
   getFieldState("test") // ✅ 입력을 등록하고 필드 상태를 반환합니다
   getFieldState("non-existent-name") // ❌ 상태를 false로, 오류를 undefined로 반환합니다
   ```
-- `getFieldState`는 form state update를 구독하여 작동하며, 다음과 같은 방법으로 formState를 구독할 수 있습니다:
+- `getFieldState`는 폼 상태 업데이트를 구독하여 동작하며, 다음과 같은 방법으로 formState를 구독할 수 있습니다:
 
   - `useForm`, `useFormContext` 또는 `useFormState`에서 구독할 수 있습니다. 이는 formState 구독을 설정하고 `getFieldState`의 두 번째 인수가 더 이상 필요하지 않습니다.
 
@@ -64,7 +64,7 @@ sidebar: apiLinks
     getFieldState("test") // ✅
     ```
 
-    - form state subscription이 설정되어 있지 않은 경우, 다음 예제와 같이 전체 `formState`를 두 번째 선택적 인수로 전달할 수 있습니다:
+    - 폼 상태 구독이 설정되어 있지 않은 경우, 다음 예제와 같이 전체 `formState`를 두 번째 선택적 인수로 전달할 수 있습니다:
 
     ```javascript
     const { register } = useForm()
