@@ -1,44 +1,44 @@
 ---
 title: getFieldState
-description: State of the field
+description: 필드의 상태
 sidebar: apiLinks
 ---
 
 ## \</> `getFieldState:` <TypeText>`(name: string, formState?: Object) => ({isDirty, isTouched, invalid, error})`</TypeText>
 
-This method is introduced in react-hook-form ([v7.25.0](https://github.com/react-hook-form/react-hook-form/releases/tag/v7.25.0)) to return individual field state. It's useful in case you are trying to retrieve nested field state in a typesafe way.
+이 method는 react-hook-form [v7.25.0](https://github.com/react-hook-form/react-hook-form/releases/tag/v7.25.0)에서 개별 필드 상태를 반환하기 위해 도입되었습니다. 이는 타입 안전한 방식으로 중첩된 필드 상태를 가져오려는 경우에 유용합니다.
 
 ### Props
 
 ---
 
-| Name      | Type                          | Description                                                                                                                                                                         |
-| --------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`    | <TypeText>`string`</TypeText> | registered field name.                                                                                                                                                              |
-| formState | <TypeText>`object`</TypeText> | This is an optional prop, which is only required if `formState` is not been read/subscribed from the `useForm`, `useFormContext` or `useFormState`. Read rules for more information |
+| Name      | Type                          | Description                                                                                                                                               |
+| --------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`    | <TypeText>`string`</TypeText> | 등록된 필드 이름.                                                                                                                                         |
+| formState | <TypeText>`object`</TypeText> | 선택적인 prop으로, useForm, useFormContext, 또는 useFormState에서 formState를 읽거나 구독하지 않는 경우에만 필요합니다. 자세한 내용은 rules를 참조하세요. |
 
 ### Return
 
 ---
 
-| Name      | Type                                           | Description                                                                                 |
-| --------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `isDirty` | <TypeText>`boolean`</TypeText>                 | field is modified.<br/>**Condition:** subscribe to `dirtyFields`.                           |
-| isTouched | <TypeText>`boolean`</TypeText>                 | field has received a focus and blur event.<br/>**Condition:** subscribe to `touchedFields`. |
-| invalid   | <TypeText>`boolean`</TypeText>                 | field is not valid.<br/>**Condition:** subscribe to `errors`.                               |
-| error     | <TypeText>`undefined \| FieldError`</TypeText> | field error object.<br/>**Condition:** subscribe to `errors`.                               |
+| Name      | Type                                           | Description                                                                                   |
+| --------- | ---------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `isDirty` | <TypeText>`boolean`</TypeText>                 | 필드가 수정되었는지 여부. <br/>**조건:** `dirtyFields`를 구독해야 합니다.                     |
+| isTouched | <TypeText>`boolean`</TypeText>                 | 필드가 포커스와 블러 이벤트를 받았는지 여부.<br/>**조건:** `touchedFields`를 구독해야 합니다. |
+| invalid   | <TypeText>`boolean`</TypeText>                 | 필드가 유효하지 않은지 여부.<br/>**조건:** `errors`를 구독해야 합니다.                        |
+| error     | <TypeText>`undefined \| FieldError`</TypeText> | 필드 오류 객체.<br/>**조건:** `errors`를 구독해야 합니다.                                     |
 
 <Admonition type="important" title="Rules">
 
-- name needs to match a registered field name.
+- name은 등록된 필드 이름과 일치해야 합니다.
   ```javascript
   getFieldState("test")
-  getFieldState("test") // ✅ register input and return field state
-  getFieldState("non-existent-name") // ❌ will return state as false and error as undefined
+  getFieldState("test") // ✅ 입력을 등록하고 필드 상태를 반환합니다
+  getFieldState("non-existent-name") // ❌ 상태를 false로, 오류를 undefined로 반환합니다
   ```
-- `getFieldState` works by subscribing to the form state update, and you can subscribe to the formState in the following ways:
+- `getFieldState`는 폼 상태 업데이트를 구독하여 동작하며, 다음과 같은 방법으로 formState를 구독할 수 있습니다:
 
-  - You can subscribe at the `useForm`, `useFormContext` or `useFormState`. This is will establish the form state subscription and `getFieldState` second argument will no longer be required.
+  - `useForm`, `useFormContext` 또는 `useFormState`에서 구독할 수 있습니다. 이는 formState 구독을 설정하고 `getFieldState`의 두 번째 인수가 더 이상 필요하지 않습니다.
 
     ```javascript
     const {
@@ -64,15 +64,16 @@ This method is introduced in react-hook-form ([v7.25.0](https://github.com/react
     getFieldState("test") // ✅
     ```
 
-  - When form state subscription is not setup, you can pass the entire `formState` as the second optional argument by following the example below:
+    - 폼 상태 구독이 설정되어 있지 않은 경우, 다음 예제와 같이 전체 `formState`를 두 번째 선택적 인수로 전달할 수 있습니다:
+
     ```javascript
     const { register } = useForm()
     register("test")
-    const { isDirty } = getFieldState("test") // ❌ formState isDirty is not subscribed at useForm
+    const { isDirty } = getFieldState("test") // ❌ useForm에서 formState의 isDirty가 구독되지 않음
     const { register, formState } = useForm()
-    const { isDirty } = getFieldState("test", formState) // ✅ formState.isDirty subscribed
+    const { isDirty } = getFieldState("test", formState) // ✅ formState.isDirty가 구독됨
     const { formState } = useFormContext()
-    const { touchedFields } = getFieldState("test", formState) // ✅ formState.touchedFields subscribed
+    const { touchedFields } = getFieldState("test", formState) // ✅ formState.touchedFields가 구독됨
     ```
 
 </Admonition>
@@ -99,7 +100,7 @@ export default function App() {
     },
   })
 
-  // you can invoke before render or within the render function
+  // 렌더링 전이나 렌더링 함수 내에서 호출할 수 있습니다.
 
   const fieldState = getFieldState("firstName")
 
