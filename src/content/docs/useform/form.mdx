@@ -1,6 +1,6 @@
 ---
 title: Form
-description: form submission 관리
+description: 폼 submission 관리
 sidebar: apiLinks
 ---
 
@@ -8,13 +8,13 @@ sidebar: apiLinks
 
 **Note**: 이 component는 현재 **BETA**입니다.
 
-이 component는 선택 사항이며 표준 native form과 유사하게 form submission을 처리합니다.
+이 component는 선택 사항이며 표준 native 폼과 유사하게 폼 submission을 처리합니다.
 
-기본적으로, form submission 데이터는 [FormData](https://developer.mozilla.org/en-US/docs/Web/API/FormData)로 POST 요청을 보냅니다. FormData를 submission하지 않으려면 `headers` props를 제공하고 대신 `application/json`을 사용할 수 있습니다.
+기본적으로, 폼 submission 데이터는 [FormData](https://developer.mozilla.org/en-US/docs/Web/API/FormData)로 POST 요청을 보냅니다. FormData를 submission하지 않으려면 `headers` props를 제공하고 대신 `application/json`을 사용할 수 있습니다.
 
 - 폼을 점진적으로 개선합니다.
 - 리액트 웹과 리액트 네이티브를 모두 지원합니다.
-- form submission 처리를 관리합니다.
+- 폼 submission 처리를 관리합니다.
 
 ```javascript
 <Form
@@ -116,7 +116,7 @@ function App() {
         {isSubmitSuccessful && <p>Form submit successful.</p>}
         {errors?.root?.server && <p>Form submit failed.</p>} <button>submit</button>
       </Form>
-      // 수동 form submission
+      // 수동 폼 submission
       <Form
         onSubmit={async ({ formData, data, formDataJson, event }) => {
           await fetch("api", {
