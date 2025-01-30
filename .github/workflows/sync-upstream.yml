@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout Fork
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ${{ github.repository }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -40,6 +40,7 @@ jobs:
           else
             echo "changes=true" >> $GITHUB_ENV
           fi
+        shell: bash
 
       - name: Check Existing PRs
         id: existing-prs
@@ -59,6 +60,7 @@ jobs:
           else
               echo "existing_pr=false" >> $GITHUB_ENV
           fi
+        shell: bash
 
       - name: Compare Changes with Each Existing PR
         id: compare-changes
@@ -98,6 +100,7 @@ jobs:
                 -d '{"state":"closed"}'
             done
           fi
+        shell: bash
 
       - name: Create Branch and Rebase Changes
         if: env.diff == 'true' || env.existing_pr == 'false'
@@ -107,11 +110,16 @@ jobs:
           git rebase upstream/master
 
           # 워크플로우 파일 복원 (동기화에서 제외했으므로 필요 없음)
-          # git checkout origin/master -- .github/workflows/ci.yml
-          # git commit -m "Restore workflow file" || echo "No changes to commit"
+          git checkout origin/master -- .github/workflows/ci.yml
+          git checkout origin/master -- .github/workflows/
+
+          # 커밋이 필요한 경우 커밋
+          git add .github/workflows/ci.yml
+          git commit -m "Restore workflow file" || echo "No changes to commit"
 
           git push origin $BRANCH_NAME --force-with-lease
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+        shell: bash
 
       - name: Create Pull Request
         if: env.diff == 'true' || env.existing_pr == 'false'
