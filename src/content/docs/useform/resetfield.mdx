@@ -14,17 +14,17 @@ sidebar: apiLinks
 
 이 함수를 호출한 후.
 
-- `isValid` form 상태가 재평가 됩니다.
-- `isDirty` form 상태가 재평가 됩니다.
+- `isValid` 폼 상태가 재평가 됩니다.
+- `isDirty` 폼 상태가 재평가 됩니다.
 
 `ResetField`에는 필드 상태를 유지하는 기능이 있습니다. 사용할 수 있는 옵션은 다음과 같습니다:
 
-| Name    |                | Type                         | Description                                                                                                                                                                                                                                                                                                       |
-| ------- | -------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`  |                | <TypeText>string</TypeText>  | 등록된 필드 이름.                                                                                                                                                                                                                                                                                            |
-| options | `keepError`    | <TypeText>boolean</TypeText> | `true`로 설정하면, 필드 에러가 유지됩니다.                                                                                                                                                                                                                                                                |
-|         | `keepDirty`    | <TypeText>boolean</TypeText> | `true`로 설정하면, `dirtyFields`는 유지됩니다.                                                                                                                                                                                                                                                               |
-|         | `keepTouched`  | <TypeText>boolean</TypeText> | `true`로 설정하면, `touchedFields`상태는 변경되지 않습니다.                                                                                                                                                                                                                                                      |
+| Name    |                | Type                         | Description                                                                                                                                                                                                                                                                    |
+| ------- | -------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `name`  |                | <TypeText>string</TypeText>  | 등록된 필드 이름.                                                                                                                                                                                                                                                              |
+| options | `keepError`    | <TypeText>boolean</TypeText> | `true`로 설정하면, 필드 에러가 유지됩니다.                                                                                                                                                                                                                                     |
+|         | `keepDirty`    | <TypeText>boolean</TypeText> | `true`로 설정하면, `dirtyFields`는 유지됩니다.                                                                                                                                                                                                                                 |
+|         | `keepTouched`  | <TypeText>boolean</TypeText> | `true`로 설정하면, `touchedFields`상태는 변경되지 않습니다.                                                                                                                                                                                                                    |
 |         | `defaultValue` | <TypeText>unknown</TypeText> | 값이 제공되지 **않은** 경우, 필드는 defaultValue로 되돌아갑니다.<br/>값이 제공되는 경우:<br/><ul><li>필드는 제공된 값으로 업데이트됩니다.</li> <li>필드의 `defaultValue`도 해당 값으로 업데이트됩니다.</li> <li><code>undefined</code> 값을 제외한 값만 지원됩니다.</li> </ul> |
 
 <Admonition type="important" title="Rules">
@@ -43,7 +43,7 @@ sidebar: apiLinks
 
 ---
 
-**필드 상태 재설정**
+**필드 상태 초기화**
 
 ```javascript copy sandbox="https://codesandbox.io/s/priceless-firefly-d0kuv"
 import * as React from "react"
