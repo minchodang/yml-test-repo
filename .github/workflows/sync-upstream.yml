@@ -35,7 +35,7 @@ jobs:
       - name: Check for Changes
         id: changes
         run: |
-          if git diff --quiet origin/master upstream/master; then
+          if git diff --quiet origin/master upstream/master -- . ':(exclude).github/workflows/'; then
             echo "changes=false" >> $GITHUB_ENV
           else
             echo "changes=true" >> $GITHUB_ENV
@@ -105,6 +105,11 @@ jobs:
           BRANCH_NAME=sync-upstream-$(date +%Y%m%d%H%M%S)
           git checkout -b $BRANCH_NAME origin/master
           git rebase upstream/master
+
+          # 워크플로우 파일 복원 (동기화에서 제외했으므로 필요 없음)
+          # git checkout origin/master -- .github/workflows/ci.yml
+          # git commit -m "Restore workflow file" || echo "No changes to commit"
+
           git push origin $BRANCH_NAME --force-with-lease
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
