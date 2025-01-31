@@ -11,6 +11,9 @@
 !.yarn/versions
 .pnp.*
 
+#ci
+.github/workflows/ci.yml
+
 # testing
 /coverage
 
