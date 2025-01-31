@@ -35,11 +35,14 @@ jobs:
         id: changes
         run: |
           # .github/workflows/ 디렉토리를 제외하고 변경 사항 확인
-          if git diff --quiet origin/master upstream/master -- . ':(exclude).github/workflows/'; then
-            echo "changes=false" >> $GITHUB_ENV
-          else
+          git diff upstream/master origin/master -- . ':(exclude).github/workflows/' > changes.diff
+          if [ -s changes.diff ]; then
             echo "changes=true" >> $GITHUB_ENV
+          else
+            echo "changes=false" >> $GITHUB_ENV
           fi
+          echo "Changes detected (excluding .github/workflows/):"
+          cat changes.diff
         shell: bash
 
       - name: Check Existing PRs
@@ -60,6 +63,7 @@ jobs:
           else
               echo "existing_pr=false" >> $GITHUB_ENV
           fi
+          echo "Existing PRs: $EXISTING_PR"
         shell: bash
 
       - name: Compare Changes with Each Existing PR
@@ -93,6 +97,7 @@ jobs:
                 https://api.github.com/repos/${{ github.repository }}/pulls \
                 | jq -r '.[] | select(.head.ref=="'$pr_ref'") | .number')
 
+              echo "Closing PR #$PR_NUMBER"
               curl -X PATCH \
                 -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
                 -H "Accept: application/vnd.github.v3+json" \
@@ -105,23 +110,66 @@ jobs:
       - name: Create Branch and Rebase Changes
         if: env.diff == 'true' || env.existing_pr == 'false'
         run: |
+          set -x # 디버깅 로그 활성화
           BRANCH_NAME=sync-upstream-$(date +%Y%m%d%H%M%S)
           git checkout -b $BRANCH_NAME origin/master
 
           # upstream/master와 리베이스
           git rebase upstream/master
 
-          # .github/workflows/ 디렉토리 변경 사항 되돌리기
-          git checkout origin/master -- .github/workflows/
+          # .github/workflows/ci.yml 변경 사항 되돌리기
+          git checkout origin/master -- .github/workflows/ci.yml
 
-          # 변경 사항이 있는지 확인하고, src 디렉토리만 스테이지
-          if ! git diff --quiet; then
-            # src 디렉토리만 스테이지
-            git add src/
+          # 상태 확인
+          echo "After checking out ci.yml:"
+          git status
 
-            # 워크플로우 파일 제외하고 커밋
-            git commit -m "Sync with upstream (excluding workflows)"
+          # .github/workflows/ci.yml에 변경 사항이 없는지 확인
+          if ! git diff --quiet -- .github/workflows/ci.yml; then
+            echo "Error: .github/workflows/ci.yml has changes after reset."
+            exit 1
           fi
+
+          # 모든 변경 사항 스테이지 해제
+          git reset
+
+          # 현재 스테이지된 파일 확인
+          echo "After git reset:"
+          git status
+
+          # src/ 디렉토리만 스테이지
+          git add src/
+
+          # 스테이지된 파일 목록 출력
+          echo "Staged files after adding src/:"
+          git diff --cached --name-only
+
+          # 스테이지된 파일이 src/ 디렉토리 내 파일만 포함하는지 확인
+          STAGED_FILES=$(git diff --cached --name-only)
+          echo "Staged files:"
+          echo "$STAGED_FILES"
+
+          if echo "$STAGED_FILES" | grep -v '^src/'; then
+            echo "Error: Some files outside src/ are staged."
+            exit 1
+          fi
+
+          # 커밋
+          if ! git diff --quiet --cached; then
+            git commit -m "Sync with upstream (excluding workflows)"
+          else
+            echo "No changes to commit in src/."
+          fi
+
+          # 커밋에 워크플로우 파일 변경 사항이 포함되지 않았는지 확인
+          if git show --name-only --pretty="" | grep '^.github/workflows/ci.yml'; then
+            echo "Error: Commit includes .github/workflows/ci.yml"
+            exit 1
+          fi
+
+          # 최종 상태 확인
+          echo "Final git status before push:"
+          git status
 
           # 브랜치 푸시
           git push origin $BRANCH_NAME --force-with-lease
