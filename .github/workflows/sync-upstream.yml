@@ -38,7 +38,9 @@ jobs:
         run: |
           git merge upstream/master --no-edit
 
-          rm -f .github/workflows/ci.yml
+          # .github 디렉토리 하위 모든 파일 삭제
+          git rm -r --cached .github || true
+          rm -rf .github
 
           # 변경 사항 스테이지
           git add .
@@ -48,20 +50,20 @@ jobs:
           git diff --cached --name-only
 
           # 커밋 (변경 사항이 있을 경우)
-          git commit -m "Sync with upstream (removing ci.yml)" || echo "No changes to commit"
+          git commit -m "Sync with upstream (removing .github directory)" || echo "No changes to commit"
         shell: bash
 
       - name: Check for Changes
         id: changes
         run: |
-          # .github/workflows/ci.yml 제외한 변경 사항 확인
-          git diff upstream/master master -- . ':(exclude).github/workflows/ci.yml' > changes.diff
+          # .github 디렉토리 제외한 변경 사항 확인
+          git diff upstream/master master -- . ':(exclude).github' > changes.diff
           if [ -s changes.diff ]; then
             echo "changes=true" >> $GITHUB_ENV
           else
             echo "changes=false" >> $GITHUB_ENV
           fi
-          echo "Changes detected (excluding .github/workflows/ci.yml):"
+          echo "Changes detected (excluding .github):"
           cat changes.diff
         shell: bash
 
@@ -96,8 +98,8 @@ jobs:
             echo "Fetching branch: $pr_ref"
             git fetch origin "$pr_ref:$pr_ref-branch"
 
-            echo "Comparing with upstream/master excluding ci.yml"
-            if ! git diff --quiet upstream/master "$pr_ref-branch" -- . ':(exclude).github/workflows/ci.yml'; then
+            echo "Comparing with upstream/master excluding .github"
+            if ! git diff --quiet upstream/master "$pr_ref-branch" -- . ':(exclude).github'; then
               ALL_EXISTING_INCLUDED=false
               break
             fi
@@ -143,8 +145,8 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/pulls \
             -d '{
-              "title": "Sync with upstream (removing ci.yml)",
-              "body": "This PR syncs the repository with upstream changes and removes .github/workflows/ci.yml",
+              "title": "Sync with upstream (removing .github directory)",
+              "body": "This PR syncs the repository with upstream changes and removes the entire .github directory.",
               "head": "'"${BRANCH_NAME}"'",
               "base": "master"
             }'
