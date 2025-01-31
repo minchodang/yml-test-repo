@@ -18,7 +18,7 @@ jobs:
         with:
           repository: ${{ github.repository }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0
+          fetch-depth: 0 # 모든 히스토리 가져오기
 
       - name: Configure Git
         run: |
@@ -39,20 +39,21 @@ jobs:
         run: |
           git merge upstream/master --no-edit
 
-          # 특정 파일을 원래 상태로 되돌리기 (.github/workflows/ci.yml)
-          git checkout origin/master -- .github/workflows/ci.yml
+          # 특정 파일 삭제 (.github/workflows/ci.yml)
+          git rm --cached .github/workflows/ci.yml || true
+          rm .github/workflows/ci.yml
 
-          # 변경된 파일 스테이지
+          # 변경 사항 스테이지
           git add .github/workflows/ci.yml
 
           # 커밋 (변경 사항이 있을 경우)
-          git commit -m "Exclude .github/workflows/ci.yml from upstream changes" || echo "No changes to commit"
+          git commit -m "Sync with upstream (excluding .github/workflows/ci.yml)" || echo "No changes to commit"
         shell: bash
 
       - name: Check for Changes
         id: changes
         run: |
-          # 변경 사항이 있는지 확인
+          # .github/workflows/ci.yml 제외한 변경 사항 확인
           git diff upstream/master master -- . ':(exclude).github/workflows/ci.yml' > changes.diff
           if [ -s changes.diff ]; then
             echo "changes=true" >> $GITHUB_ENV
