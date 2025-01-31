@@ -33,7 +33,7 @@ jobs:
       - name: Get src/ changes
         run: |
           # upstream/master와 origin/master의 src/ 디렉토리 차이 추출
-          git diff upstream/master -- src/ > src_changes.diff
+          git diff upstream/master origin/master -- src/ > src_changes.diff
           if [ -s src_changes.diff ]; then
             echo "changes=true" >> $GITHUB_ENV
           else
@@ -113,9 +113,25 @@ jobs:
           git checkout -b $BRANCH_NAME origin/master
 
           # upstream/master의 src/ 디렉토리 변경 사항 적용
-          git apply src_changes.diff
+          git checkout upstream/master -- src/
 
-          # src/ 디렉토리 변경 사항 스테이지
+          # .github/workflows/ci.yml 파일 존재 여부 확인 및 제거
+          if [ -f .github/workflows/ci.yml ]; then
+            git rm --cached .github/workflows/ci.yml || true
+            rm .github/workflows/ci.yml
+            echo "Removed .github/workflows/ci.yml to exclude workflows changes."
+          else
+            echo ".github/workflows/ci.yml does not exist. Skipping removal."
+          fi
+
+          # 모든 변경 사항 스테이지 해제
+          git reset
+
+          # 현재 스테이지된 파일 확인
+          echo "After git reset:"
+          git status
+
+          # src/ 디렉토리만 스테이지
           git add src/
 
           # 스테이지된 파일 목록 출력
@@ -137,6 +153,7 @@ jobs:
             git commit -m "Sync src/ with upstream"
           else
             echo "No changes to commit in src/."
+            exit 0
           fi
 
           # 커밋에 워크플로우 파일 변경 사항이 포함되지 않았는지 확인
