@@ -38,15 +38,19 @@ jobs:
         run: |
           git merge upstream/master --no-edit
 
-          # 특정 파일 삭제 (.github/workflows/ci.yml)
+          # .github/workflows/ci.yml 파일 삭제
           git rm --cached .github/workflows/ci.yml || true
-          rm -f .github/workflows/ci.yml # 삭제된 파일을 로컬에서 완전히 제거
+          rm -f .github/workflows/ci.yml
 
           # 변경 사항 스테이지
           git add .
 
+          # 로그 출력: 현재 스테이지에 있는 파일 확인
+          echo "Staged files:"
+          git diff --cached --name-only
+
           # 커밋 (변경 사항이 있을 경우)
-          git commit -m "Sync with upstream" || echo "No changes to commit"
+          git commit -m "Sync with upstream (removing ci.yml)" || echo "No changes to commit"
         shell: bash
 
       - name: Check for Changes
@@ -139,10 +143,10 @@ jobs:
           curl -X POST \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
-            ${{ github.repository }}/pulls \
+            https://api.github.com/repos/${{ github.repository }}/pulls \
             -d '{
-              "title": "Sync with upstream (excluding workflows)",
-              "body": "This PR syncs the repository with upstream changes excluding .github/workflows/ci.yml",
+              "title": "Sync with upstream (removing ci.yml)",
+              "body": "This PR syncs the repository with upstream changes and removes .github/workflows/ci.yml",
               "head": "'"${BRANCH_NAME}"'",
               "base": "master"
             }'
