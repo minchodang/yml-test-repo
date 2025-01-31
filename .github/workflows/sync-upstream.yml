@@ -114,10 +114,13 @@ jobs:
           # .github/workflows/ 디렉토리 변경 사항 되돌리기
           git checkout origin/master -- .github/workflows/
 
-          # 변경 사항이 있는지 확인하고 커밋
-          if [ -n "$(git status --porcelain)" ]; then
-            git add .github/workflows/
-            git commit -m "Discard .github/workflows changes from upstream"
+          # 변경 사항이 있는지 확인하고, src 디렉토리만 스테이지
+          if ! git diff --quiet; then
+            # src 디렉토리만 스테이지
+            git add src/
+
+            # 워크플로우 파일 제외하고 커밋
+            git commit -m "Sync with upstream (excluding workflows)"
           fi
 
           # 브랜치 푸시
