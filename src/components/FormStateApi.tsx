@@ -216,9 +216,9 @@ export const FormStateApi = ({
         <code className={typographyStyles.typeText}>object</code>
       </td>
       <td>
-        An object with field errors. There is also an{" "}
-        <Link href="/docs/useformstate/errormessage">ErrorMessage</Link>{" "}
-        component to retrieve error message easily.
+        필드 에러가 포함된 객체입니다. 에러 메세지를 쉽게 가져오기 위해{" "}
+        <Link href="/docs/useformstate/errormessage">ErrorMessage</Link>도
+        있습니다.
       </td>
     </tr>
   </>

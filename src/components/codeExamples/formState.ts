@@ -5,7 +5,7 @@ export default function App() {
   const {
     register,
     handleSubmit,
-    // Read the formState before render to subscribe the form state through the Proxy
+    // 렌더링 전에 formState를 읽어 Proxy를 통해 폼 상태를 구독하세요.
     formState: { errors, isDirty, isSubmitting, touchedFields, submitCount },
   } = useForm();
   const onSubmit = (data) => console.log(data);
