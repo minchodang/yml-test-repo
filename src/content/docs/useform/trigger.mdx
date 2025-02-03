@@ -12,12 +12,12 @@ sidebar: apiLinks
 
 ---
 
-| Name        | Type                           | Description                                                                                                                      | Example                                  |
-| ----------- | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
-| name        | <TypeText>undefined</TypeText> | 모든 필드에서 유효성 검사 트리거.                                                                                                | `trigger()`                              |
-|             | <TypeText>string</TypeText>    | **name**으로 특정 필드 값에 대한 유효성 검사 트리거.                                                                             | `trigger("yourDetails.firstName")`       |
-|             | <TypeText>string[]</TypeText>  | **name**으로 여러 필드에 대한 유효성 검사 트리거.                                                                                | `trigger(["yourDetails.lastName"])`      |
-| shouldFocus | <TypeText>boolean</TypeText>   | 오류를 설정하는 동안 입력에 초점을 맞춰야 합니다. 입력의 참조가 등록된 경우에만 작동하며, custom register에는 작동하지 않습니다. | `trigger('name', { shouldFocus: true })` |
+| Name        | Type                           | Description                                                                                                                                  | Example                                  |
+| ----------- | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| name        | <TypeText>undefined</TypeText> | 모든 필드에서 유효성 검사 트리거.                                                                                                            | `trigger()`                              |
+|             | <TypeText>string</TypeText>    | **name**으로 특정 필드 값에 대한 유효성 검사 트리거.                                                                                         | `trigger("yourDetails.firstName")`       |
+|             | <TypeText>string[]</TypeText>  | **name**으로 여러 필드에 대한 유효성 검사 트리거.                                                                                            | `trigger(["yourDetails.lastName"])`      |
+| shouldFocus | <TypeText>boolean</TypeText>   | 오류를 설정하는 동안 입력에 초점을 맞춰야 합니다. 입력의 참조가 등록된(registered) 경우에만 작동하며, custom register에는 작동하지 않습니다. | `trigger('name', { shouldFocus: true })` |
 
 <Admonition type="important" title="Rules">
 
