@@ -25,7 +25,8 @@ function ApiFormState({ api }: { api: any }) {
       <ul>
         <li>
           <p>
-            <code>formState</code> is wrapped with a{" "}
+            <code>formState</code>는 렌더링 성능을 향상시키고 특정 상태가
+            구독되지 않았을 때 추가 로직을 건너뛰기 위해
             <a
               href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy"
               target="_blank"
@@ -33,25 +34,25 @@ function ApiFormState({ api }: { api: any }) {
             >
               Proxy
             </a>{" "}
-            to improve render performance and skip extra logic if specific state
-            is not subscribed to. Therefore make sure you invoke or read it
-            before a <code>render</code> in order to enable the state update.
+            로 감싸져 있습니다. 따라서 상태 업데이트를 활성화하려면{" "}
+            <code>렌더링</code> 전에 formState을 호출하거나 읽어야 합니다.
           </p>
         </li>
         <li>
           <p>
-            <code>formState</code> is updated in batch. If you want to subscribe
-            to <code>formState</code> via <code>useEffect</code>, make sure that
-            you place the entire <code>formState</code> in the optional array.
+            <code>formState</code>는 일괄적으로 업데이트됩니다.
+            <code>useEffect</code>를 통해 <code>formState</code>를 구독하려면{" "}
+            <code>formState</code>를 의존성 배열(optional array)에 포함시켜야
+            합니다.
           </p>
           <TabGroup buttonLabels={["snippet", "example"]}>
             <CodeArea
               rawData={`useEffect(() => {
   if (formState.errors.firstName) {
-    // do the your logic here
+    // 여기에 로직을 작성하세요.
   }
 }, [formState]); // ✅ 
-// ❌ formState.errors will not trigger the useEffect        
+// ❌ formState.errors는 useEffect를 트리거하지 않습니다.        
 `}
             />
             <CodeArea
@@ -62,16 +63,15 @@ function ApiFormState({ api }: { api: any }) {
         </li>
         <li>
           <p>
-            Pay attention to the logical operator when subscription to{" "}
-            <code>formState</code>.
+            <code>formState</code>를 구독할 때 논리 연산자에 주의하세요.
           </p>
 
           <CodeArea
-            rawData={`// ❌ formState.isValid is accessed conditionally, 
-// so the Proxy does not subscribe to changes of that state
+            rawData={`// ❌ formState.isValid는 조건부로 접근됩니다, 
+// 따라서 Proxy는 해당 상태의 변경 사항을 구독하지 않습니다.
 return <button disabled={!formState.isDirty || !formState.isValid} />;
   
-// ✅ read all formState values to subscribe to changes
+// ✅ 변경 사항을 구독하려면 모든 formState 값을 읽으세요.
 const { isDirty, isValid } = formState;
 return <button disabled={!isDirty || !isValid} />;
 `}

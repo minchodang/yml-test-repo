@@ -169,9 +169,9 @@ export const FormStateApi = ({
       <td>
         <div>{(api || API).formState.isValid}</div>
         <p>
-          <code>setError</code> has no effect on <code>isValid</code> formState,{" "}
-          <code>isValid</code> will always derived via the entire form
-          validation result.
+          <code>setError</code>는 <code>isValid</code> formState에 영향을 주지
+          않습니다. <code>isValid</code>는 항상 전체 폼의 유효성 검사 결과를
+          통해 결정됩니다.
         </p>
       </td>
     </tr>
@@ -216,9 +216,9 @@ export const FormStateApi = ({
         <code className={typographyStyles.typeText}>object</code>
       </td>
       <td>
-        An object with field errors. There is also an{" "}
-        <Link href="/docs/useformstate/errormessage">ErrorMessage</Link>{" "}
-        component to retrieve error message easily.
+        필드 에러가 포함된 객체입니다. 에러 메세지를 쉽게 가져오기 위해{" "}
+        <Link href="/docs/useformstate/errormessage">ErrorMessage</Link>도
+        있습니다.
       </td>
     </tr>
   </>

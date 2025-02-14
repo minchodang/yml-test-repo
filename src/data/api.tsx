@@ -645,28 +645,24 @@ const Select = React.forwardRef(({ onChange, onBlur, name, label }, ref) => (
     description: (
       <>
         <p>
-          This object contains information about the entire form state. It helps
-          you to keep on track with the user's interaction with your form
-          application.
+          이 객체는 전체 폼 상태에 대한 정보를 포함하고 있습니다. 폼
+          애플리케이션과 사용자의 상호작용을 추적하는 데 도움이 됩니다.
         </p>
       </>
     ),
     isSubmitSuccessful: (
-      <p>
-        Indicate the form was successfully submitted without any runtime error.
-      </p>
+      <p>런타임 에러 없이 폼이 성공적으로 제출되었음을 나타냅니다.</p>
     ),
     isDirty: (
       <>
         <p>
-          Set to <code>true</code> after the user modifies any of the inputs.
+          사용자가 입력 중 하나라도 수정한다면 <code>true</code>로 설정됩니다.
         </p>
         <ul>
           <li>
             <p>
-              <b>Important:</b> Make sure to provide all inputs' defaultValues
-              at the useForm, so hook form can have a single source of truth to
-              compare whether the form is dirty.
+              <b>중요:</b> 모든 입력의 기본값을 useForm에 제공해야 hook form이
+              폼이 변경이 되었는지 비교할 수 있는 단일 소스를 가질 수 있습니다.
             </p>
             <CodeArea
               rawData={`const {
@@ -677,15 +673,14 @@ const Select = React.forwardRef(({ onChange, onBlur, name, label }, ref) => (
 // isDirty: true
 setValue('test', 'change')
  
-// isDirty: false because there getValues() === defaultValues
+// isDirty: false 왜냐하면 getValues() === defaultValues 이기 때문
 setValue('test', '') 
 `}
             />
           </li>
           <li>
             <p>
-              File typed input will need to be managed at the app level due to
-              the ability to cancel file selection and{" "}
+              파일 타입 입력은 파일 선택 취소 및{" "}
               <a
                 href="https://developer.mozilla.org/en-US/docs/Web/API/FileList"
                 target="_blank"
@@ -693,78 +688,76 @@ setValue('test', '')
               >
                 FileList
               </a>{" "}
-              object.
+              객체 관리 때문에 애플리케이션 수준에서 관리되어야 합니다.
             </p>
           </li>
           <li>
-            <p>Do not support custom object, Class or File object.</p>
+            <p>사용자 정의 객체, 클래스 또는 파일 객체는 지원하지 않습니다.</p>
           </li>
         </ul>
       </>
     ),
     isSubmitted: (
       <>
-        Set to <code>true</code> after the form is submitted. Will remain{" "}
-        <code>true</code> until the <code>reset</code> method is invoked.
+        폼이 제출된 후 <code>true</code>로 설정됩니다.
+        <code>reset</code> 메서드가 호출될 때까지 <code>true</code>로
+        유지됩니다.
       </>
     ),
     dirtyFields: (
       <>
         <p>
-          An object with the user-modified fields. Make sure to provide all
-          inputs' defaultValues via useForm, so the library can compare against
-          the <code>defaultValues</code>.
+          사용자가 수정한 필드를 포함하는 객체입니다. 라이브러리가{" "}
+          <code>defaultValues</code>와 비교할 수 있도록 useForm을 통해 모든
+          입력의 defaultValues를 제공해야 합니다.
         </p>
         <ul>
           <li>
             <p>
-              <b>Important:</b> Make sure to provide defaultValues at the
-              useForm, so hook form can have a single source of truth to compare
-              each field's dirtiness.
+              <b>중요:</b> useForm에서 defaultValues를 제공하여, hook form이 각
+              필드의 변경 상태를 비교할 수 있는 단일 소스를 가질 수 있도록 해야
+              합니다.
             </p>
           </li>
 
           <li>
             <p>
-              Dirty fields will <strong>not</strong> represent as{" "}
-              <code>isDirty</code> formState, because dirty fields are marked
-              field dirty at field level rather the entire form. If you want to
-              determine the entire form state use <code>isDirty</code> instead.
+              Dirty 필드는 전체 폼이 아닌 개별 필드 수준에서 dirty로 표시되므로,
+              Dirty 필드는 폼이 <code>isDirty</code> 상태임을 나타내지{" "}
+              <strong>않습니다</strong>. 전체 폼 상태를 확인하려면{" "}
+              <code>isDirty</code>를 사용하세요.
             </p>
           </li>
         </ul>
       </>
     ),
-    touched:
-      "An object containing all the inputs the user has interacted with.",
+    touched: "사용자가 상호작용한 모든 입력을 포함하는 객체입니다.",
     defaultValues: (
       <p>
-        The value which has been set at{" "}
         <Link href="/docs/useform" aria-label="read more about reset api">
           useForm
         </Link>
-        's defaultValues or updated defaultValues via{" "}
+        의 defaultValues에 설정된 값 또는
         <Link href="/docs/useform/reset" aria-label="read more about reset api">
           reset
         </Link>{" "}
-        API.
+        API를 통해 업데이트된 defaultValues입니다.
       </p>
     ),
     isSubmitting: (
       <>
-        <code>true</code> if the form is currently being submitted.{" "}
-        <code>false</code> otherwise.
+        폼이 현재 제출 중이면 <code>true</code>, 그렇지 않으면{" "}
+        <code>false</code> 입니다.
       </>
     ),
     isLoading: (
       <>
         <p>
-          <code>true</code> if the form is currently loading async default
-          values.
+          비동기 기본 값을 로드 중인 경우 <code>true</code>입니다.
         </p>
         <p>
-          <b className={typographyStyles.note}>Important:</b> this prop is only
-          applicable to async <code>defaultValues</code>
+          <b className={typographyStyles.note}>중요:</b> 이 속성은 비동기{" "}
+          <code>defaultValues</code>에만 적용됩니다.
         </p>
         <CodeArea
           rawData={`const { 
@@ -776,18 +769,18 @@ setValue('test', '')
         />
       </>
     ),
-    submitCount: "Number of times the form was submitted.",
+    submitCount: "폼이 제출된 횟수입니다.",
     isValid: (
       <>
-        Set to <code>true</code> if the form doesn't have any errors.
+        폼에 에러가 없으면 <code>true</code>로 설정됩니다.
       </>
     ),
     isValidating: (
       <>
-        Set to <code>true</code> during validation.
+        유효성 검사 중 <code>true</code>로 설정됩니다.
       </>
     ),
-    validatingFields: <>Capture fields which are getting async validation.</>,
+    validatingFields: <>비동기 유효성 검사가 이뤄지는 필드를 캡쳐합니다.</>,
   },
   errors: {
     title: "errors",
