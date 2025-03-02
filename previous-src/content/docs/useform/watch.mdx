@@ -1,0 +1,256 @@
+---
+title: watch
+description: 입력 변경 사항 구독
+sidebar: apiLinks
+---
+
+## \</> `watch:` <TypeText>(names?: string | string[] | (data, options) => void) => unknown</TypeText>
+
+이 메서드는 지정된 입력을 감시하고 해당 값을 반환합니다. 입력 값을 렌더링하고 조건에 따라 렌더링할 내용을 결정할 때 유용합니다.
+
+### Props
+
+---
+
+| Type                                                                           | Description                                                                             |
+| ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| <TypeText>string</TypeText>                                                    | 이름으로 입력 값을 감시 (lodash [get](https://lodash.com/docs/4.17.15#get) 함수와 유사) |
+| <TypeText>string[]</TypeText>                                                  | 여러 입력을 감시                                                                        |
+| <TypeText>undefined</TypeText>                                                 | 모든 입력을 감시                                                                        |
+| <TypeText>`(data: unknown, { name: string, type: string }) => void`</TypeText> | 모든 입력을 감시하고 콜백을 호출                                                        |
+
+### Return
+
+---
+
+| Example                                                          | Return                                             |
+| ---------------------------------------------------------------- | -------------------------------------------------- |
+| `watch('inputName')`                                             | <TypeText>unknown</TypeText>                       |
+| `watch(['inputName1'])`                                          | <TypeText>unknown[]</TypeText>                     |
+| `watch()`                                                        | <TypeText>`{[key:string]: unknown}`</TypeText>     |
+| `watch((data, { name, type }) => console.log(data, name, type))` | <TypeText>`{ unsubscribe: () => void }`</TypeText> |
+
+<Admonition type="important" title="Rules">
+
+- `defaultValue`가 정의되지 않은 경우, `watch`의 첫 번째 렌더링은 `register` 이전에 호출되기 때문에 `undefined`를 반환합니다. 이 동작을 방지하려면 `useForm`에서 `defaultValues`를 제공하는 것이 좋지만 인라인 `defaultValue`를 두 번째 인수로 설정할 수 있습니다.
+- `defaultValue`와 `defaultValues`를 모두 제공되면 `defaultValue`가 반환됩니다.
+- 이 API는 앱 또는 form의 루트에서 다시 렌더링을 트리거하므로 성능 문제가 발생하는 경우 콜백 또는 [useWatch](/docs/usewatch) API를 사용하는 것이 좋습니다.
+- `watch` 결과는 값 업데이트를 감지하기 위해 `useEffect`의 deps 대신 렌더 단계에 최적화되어 있으므로, 값 비교를 위해 외부 커스텀 훅을 사용하는 것이 좋습니다.
+
+</Admonition>
+
+**Examples:**
+
+---
+
+**폼에서의 Watch**
+
+<TabGroup buttonLabels={["TS", "JS"]}>
+
+```typescript copy sandbox="https://codesandbox.io/s/react-hook-form-watch-v7-ts-8et1d"
+import React from "react"
+import { useForm } from "react-hook-form"
+
+interface IFormInputs {
+  name: string
+  showAge: boolean
+  age: number
+}
+
+function App() {
+  const {
+    register,
+    watch,
+    formState: { errors },
+    handleSubmit,
+  } = useForm<IFormInputs>()
+  const watchShowAge = watch("showAge", false) // 두 번째 인수로 기본 값을 제공할 수 있습니다.
+  const watchAllFields = watch() // 인수를 전달하지 않으면, 모든 것을 감시하게 됩니다.
+  const watchFields = watch(["showAge", "age"]) // 이름을 통해 특정 필드를 대상으로 할 수도 있습니다.
+
+  // watch의 콜백 버전입니다. 완료되면 unsubscribe하는 것은 사용자 책임입니다.
+  React.useEffect(() => {
+    const subscription = watch((value, { name, type }) =>
+      console.log(value, name, type)
+    )
+    return () => subscription.unsubscribe()
+  }, [watch])
+
+  const onSubmit = (data: IFormInputs) => console.log(data)
+
+  return (
+    <>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <input {...register("name", { required: true, maxLength: 50 })} />
+        <input type="checkbox" {...register("showAge")} />
+        {/* based on yes selection to display Age Input*/}
+        {watchShowAge && (
+          <input type="number" {...register("age", { min: 50 })} />
+        )}
+        <input type="submit" />
+      </form>
+    </>
+  )
+}
+```
+
+```javascript copy sandbox="https://codesandbox.io/s/react-hook-form-watch-v7-qbxd7"
+import React from "react"
+import { useForm } from "react-hook-form"
+
+function App() {
+  const {
+    register,
+    watch,
+    formState: { errors },
+    handleSubmit,
+  } = useForm()
+  const watchShowAge = watch("showAge", false) // 두 번째 인수로 기본 값을 제공할 수 있습니다.
+  const watchAllFields = watch() // 인수를 전달하지 않으면, 모든 것을 감시하게 됩니다.
+  const watchFields = watch(["showAge", "number"]) // 이름을 통해 특정 필드를 대상으로 할 수도 있습니다.
+
+  // watch의 콜백 버전입니다. 완료되면 unsubscribe하는 것은 사용자 책임입니다.
+  React.useEffect(() => {
+    const subscription = watch((value, { name, type }) =>
+      console.log(value, name, type)
+    )
+    return () => subscription.unsubscribe()
+  }, [watch])
+
+  const onSubmit = (data) => console.log(data)
+
+  return (
+    <>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <input type="checkbox" {...register("showAge")} />
+
+        {/* ‘예’ 선택에 따라 나이 input 필드를 표시 */}
+        {watchShowAge && (
+          <input type="number" {...register("age", { min: 50 })} />
+        )}
+
+        <input type="submit" />
+      </form>
+    </>
+  )
+}
+```
+
+</TabGroup>
+
+**필드 배열에서의 Watch**
+
+<TabGroup buttonLabels={["TS", "JS"]}>
+
+```typescript copy sandbox="https://codesandbox.io/s/watch-with-usefieldarray-z54xwd"
+import * as React from "react"
+import { useForm, useFieldArray } from "react-hook-form"
+
+type FormValues = {
+  test: {
+    firstName: string
+    lastName: string
+  }[]
+}
+
+function App() {
+  const { register, control, handleSubmit, watch } = useForm<FormValues>()
+  const { fields, remove, append } = useFieldArray({
+    name: "test",
+    control,
+  })
+  const onSubmit = (data: FormValues) => console.log(data)
+
+  console.log(watch("test"))
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      {fields.map((field, index) => {
+        return (
+          <div key={field.id}>
+            <input
+              defaultValue={field.firstName}
+              {...register(`test.${index}.firstName`)}
+            />
+            <input
+              defaultValue={field.lastName}
+              {...register(`test.${index}.lastName`)}
+            />
+            <button type="button" onClick={() => remove(index)}>
+              Remove
+            </button>
+          </div>
+        )
+      })}
+      <button
+        type="button"
+        onClick={() =>
+          append({
+            firstName: "bill" + renderCount,
+            lastName: "luo" + renderCount,
+          })
+        }
+      >
+        Append
+      </button>
+    </form>
+  )
+}
+```
+
+```javascript copy sandbox="https://codesandbox.io/s/watch-with-usefieldarray-52yy3z"
+import * as React from "react"
+import { useForm, useFieldArray } from "react-hook-form"
+
+function App() {
+  const { register, control, handleSubmit, watch } = useForm()
+  const { fields, remove, append } = useFieldArray({
+    name: "test",
+    control,
+  })
+  const onSubmit = (data) => console.log(data)
+
+  console.log(watch("test"))
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      {fields.map((field, index) => {
+        return (
+          <div key={field.id}>
+            <input
+              defaultValue={field.firstName}
+              {...register(`test.${index}.firstName`)}
+            />
+            <input
+              defaultValue={field.lastName}
+              {...register(`test.${index}.lastName`)}
+            />
+            <button type="button" onClick={() => remove(index)}>
+              Remove
+            </button>
+          </div>
+        )
+      })}
+      <button
+        type="button"
+        onClick={() =>
+          append({
+            firstName: "bill" + renderCount,
+            lastName: "luo" + renderCount,
+          })
+        }
+      >
+        Append
+      </button>
+    </form>
+  )
+}
+```
+
+</TabGroup>
+
+## Video
+
+---
+
+<YouTube youTubeId="3qLd69WMqKk" />

@@ -1,0 +1,127 @@
+---
+title: clearErrors
+description: 폼 에러 제거
+sidebar: apiLinks
+---
+
+## \</> `clearErrors:` <TypeText>(name?: string | string[]) => void</TypeText>
+
+이 함수는 폼의 에러를 직접 제거할 수 있습니다.
+
+### Props
+
+---
+
+| Type                           | Description       | Example                                 |
+| ------------------------------ | ----------------- | --------------------------------------- |
+| <TypeText>undefined</TypeText> | 모든 에러 제거.   | `clearErrors()`                         |
+| <TypeText>string</TypeText>    | 하나의 에러 제거. | `clearErrors("yourDetails.firstName")`  |
+| <TypeText>string[]</TypeText>  | 여러 에러 제거.   | `clearErrors(["yourDetails.lastName"])` |
+
+- `undefined`: 모든 에러를 초기화합니다.
+- `string`: 하나의 필드 또는 키 이름으로 에러를 초기화합니다.
+
+  ```javascript
+  register("test.firstName", { required: true })
+  register("test.lastName", { required: true })
+  clearErrors("test") // test.firstName 및 test.lastName의 모든 에러를 제거
+  clearErrors("test.firstName") // 하나의 입력 에러 제거
+  ```
+
+- `string[]`: 주어진 필드의 에러를 초기화합니다.
+
+<Admonition type="important" title="규칙">
+
+- 이 메서드는 각 입력 필드에 연결된 유효성 검사 규칙에는 영향을 주지 않습니다.
+- 이 메서드는 유효성 검사 규칙이나 `isValid` formState에는 영향을 미치지 않습니다.
+
+</Admonition>
+
+**Examples**
+
+---
+
+<TabGroup buttonLabels={["TS", "JS"]}>
+
+```typescript sandbox="https://codesandbox.io/s/react-hook-form-v7-ts-clearerrors-w3ymx"
+import * as React from "react"
+import { useForm } from "react-hook-form"
+
+type FormInputs = {
+  firstName: string
+  lastName: string
+  username: string
+}
+
+const App = () => {
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    clearErrors,
+  } = useForm<FormInputs>()
+
+  const onSubmit = (data: FormInputs) => {
+    console.log(data)
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register("firstName", { required: true })} />
+      <input {...register("lastName", { required: true })} />
+      <input {...register("username", { required: true })} />
+      <button type="button" onClick={() => clearErrors("firstName")}>
+        Clear First Name Errors
+      </button>
+      <button
+        type="button"
+        onClick={() => clearErrors(["firstName", "lastName"])}
+      >
+        Clear First and Last Name Errors
+      </button>
+      <button type="button" onClick={() => clearErrors()}>
+        Clear All Errors
+      </button>
+      <input type="submit" />
+    </form>
+  )
+}
+```
+
+```javascript sandbox="https://codesandbox.io/s/react-hook-form-v7-clearerrors-w5tl6"
+import * as React from "react"
+import { useForm } from "react-hook-form"
+
+const App = () => {
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    clearErrors,
+  } = useForm()
+  const onSubmit = (data) => console.log(data)
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register("firstName", { required: true })} />
+      <input {...register("lastName", { required: true })} />
+      <input {...register("username", { required: true })} />
+      <button type="button" onClick={() => clearErrors("firstName")}>
+        Clear First Name Errors
+      </button>
+      <button
+        type="button"
+        onClick={() => clearErrors(["firstName", "lastName"])}
+      >
+        Clear First and Last Name Errors
+      </button>
+      <button type="button" onClick={() => clearErrors()}>
+        Clear All Errors
+      </button>
+      <input type="submit" />
+    </form>
+  )
+}
+```
+
+</TabGroup>

@@ -1,0 +1,63 @@
+name: Compare src for Translation Updates
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * *" # 매일 새벽 1시에 실행 (master 동기화 후 시간 배정)
+
+jobs:
+  compare-src:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
+      - name: Install diff2html-cli
+        run: npm install -g diff2html-cli
+
+      - name: Generate src Diff Report
+        run: |
+          # previous-src 디렉토리와 master 브랜치의 src를 비교
+          git diff --name-only previous-src master -- src > changed_files.txt
+          echo "Changed files in src:"
+          cat changed_files.txt
+
+          # diff 보고서 HTML 생성
+          git diff previous-src master -- src | diff2html-cli -i stdin -o stdout > diff_report.html
+          echo "Diff report generated."
+
+      - name: Create Translation Update PR
+        run: |
+          if [ -s changed_files.txt ]; then
+            BRANCH_NAME=update-src-$(date +%Y%m%d%H%M%S)
+            # master-ko 브랜치에서 작업 (번역 업데이트 대상)
+            git checkout -B master-ko origin/master-ko || git checkout -B master-ko
+            git checkout -b $BRANCH_NAME
+            # 번역 업데이트 필요성을 알리는 빈 커밋 (diff_report.html 참고)
+            git commit --allow-empty -m "Translation update needed for src changes. See diff_report.html for details."
+            git push origin $BRANCH_NAME
+            curl -X POST \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/repos/${{ github.repository }}/pulls \
+              -d '{
+                "title": "Translation update needed for src changes",
+                "body": "There are changes in src compared to previous-src. Please review the diff report for translation updates.",
+                "head": "'"${BRANCH_NAME}"'",
+                "base": "master-ko"
+              }'
+          else
+            echo "No src changes detected."
+          fi
+        shell: bash

@@ -1,0 +1,68 @@
+---
+title: control
+description: 폼을 제어
+sidebar: apiLinks
+---
+
+## \</> `control:` <TypeText>Object</TypeText>
+
+이 객체는 컴포넌트를 리액트 훅 폼에 등록할 수 있는 메소드들을 포함합니다.
+
+<Admonition type="important" title="Rules">
+
+**Important:** 직접 이 객체의 속성에 접근하지 마세요. 속성은 패키지 내부 용도로만 사용합니다.
+
+</Admonition>
+
+**Examples:**
+
+---
+
+<TabGroup buttonLabels={["TS", "JS"]}>
+
+```typescript copy sandbox="https://codesandbox.io/s/react-hook-form-v6-controller-ts-jwyzw"
+import React from "react"
+import { useForm, Controller } from "react-hook-form"
+import { TextField } from "@material-ui/core"
+
+type FormInputs = {
+  firstName: string
+}
+
+function App() {
+  const { control, handleSubmit } = useForm<FormInputs>()
+  const onSubmit = (data: FormInputs) => console.log(data)
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Controller
+        as={TextField}
+        name="firstName"
+        control={control}
+        defaultValue=""
+      />
+
+      <input type="submit" />
+    </form>
+  )
+}
+```
+
+```javascript copy sandbox="https://codesandbox.io/s/react-hook-form-v7-controller-5h1q5"
+import { useForm, Controller } from "react-hook-form"
+
+function App() {
+  const { control } = useForm()
+
+  return (
+    <Controller
+      render={({ field }) => <input {...field} />}
+      name="firstName"
+      control={control}
+      defaultValue=""
+    />
+  )
+}
+```
+
+</TabGroup>

@@ -1,0 +1,834 @@
+---
+title: Get Started
+description: 리액트 훅 form으로 간단한 양식 유효성 검사.
+sidebar: getStartedLinks
+---
+
+## 설치 {#Quickstart}
+
+React Hook Form을 설치하는 것은 단 한 번의 명령어로 가능합니다.
+
+```bash copy
+npm install react-hook-form
+```
+
+## 예제
+
+다음 코드 예제는 기본 사용법을 보여줍니다:
+
+<TabGroup buttonLabels={["TS", "JS"]}>
+
+```typescript copy sandbox="https://codesandbox.io/s/react-hook-form-get-started-ts-5ksmm"
+import { useForm, SubmitHandler } from "react-hook-form"
+
+type Inputs = {
+  example: string
+  exampleRequired: string
+}
+
+export default function App() {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<Inputs>()
+  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data)
+
+  console.log(watch("example")) // 입력 값 관찰
+
+  return (
+    /* "handleSubmit"은 "onSubmit"을 호출하기 전에 입력 값을 validation합니다. */
+    <form onSubmit={handleSubmit(onSubmit)}>
+      {/* "register" 함수를 호출하여 입력을 훅에 register합니다. */}
+      <input defaultValue="test" {...register("example")} />
+
+      {/* HTML 표준 validation 규칙을 사용하여 입력 validation을 포함합니다. */}
+      <input {...register("exampleRequired", { required: true })} />
+      {/* field validation에 실패하면 errors가 반환됩니다. */}
+      {errors.exampleRequired && <span>This field is required</span>}
+
+      <input type="submit" />
+    </form>
+  )
+}
+```
+
+```javascript copy sandbox="https://codesandbox.io/s/react-hook-form-get-started-j5wxo"
+import { useForm } from "react-hook-form"
+
+export default function App() {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm()
+
+  const onSubmit = (data) => console.log(data)
+
+  console.log(watch("example")) // 입력 값 관찰
+
+  return (
+    /* "handleSubmit"은 "onSubmit"을 호출하기 전에 입력 값을 validation합니다. */
+    <form onSubmit={handleSubmit(onSubmit)}>
+      {/* "register" 함수를 호출하여 입력을 훅에 register합니다. */}
+      <input defaultValue="test" {...register("example")} />
+
+      {/* HTML 표준 validation 규칙을 사용하여 입력 validation을 포함합니다. */}
+      <input {...register("exampleRequired", { required: true })} />
+      {/* field validation에 실패하면 errors가 반환됩니다. */}
+      {errors.exampleRequired && <span>This field is required</span>}
+
+      <input type="submit" />
+    </form>
+  )
+}
+```
+
+</TabGroup>
+
+## React 웹 비디오 튜토리얼 {#ReactWebVideoTutorial}
+
+이 비디오 튜토리얼은 React Hook Form의 기본 사용법과 개념을 설명합니다.
+
+<YouTube youTubeId="RkXv4AXXC_4" />
+
+## Register field {#Registerfields}
+
+React Hook Form의 주요 개념 중 하나는 컴포넌트를 훅에 **`register`** 하는 것입니다. 이렇게 하면 해당 컴포넌트의 값이 form validation 및 제출에 사용될 수 있습니다.
+
+**참고:** 각 field는 register 과정에서 `name`이라는 키가 **`필요`** 합니다.
+
+{/* JSTSCopy [CodeSandbox JS](https://codesandbox.io/s/react-hook-form-get-started-smspp) */}
+
+<TabGroup buttonLabels={["TS", "JS"]} >
+
+```typescript copy sandbox="https://codesandbox.io/s/react-hook-form-get-started-ts-5ksmm"
+import ReactDOM from "react-dom"
+import { useForm, SubmitHandler } from "react-hook-form"
+
+enum GenderEnum {
+  female = "female",
+  male = "male",
+  other = "other",
+}
+
+interface IFormInput {
+  firstName: string
+  gender: GenderEnum
+}
+
+export default function App() {
+  const { register, handleSubmit } = useForm<IFormInput>()
+  const onSubmit: SubmitHandler<IFormInput> = (data) => console.log(data)
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <label>First Name</label>
+      <input {...register("firstName")} />
+      <label>Gender Selection</label>
+      <select {...register("gender")}>
+        <option value="female">female</option>
+        <option value="male">male</option>
+        <option value="other">other</option>
+      </select>
+      <input type="submit" />
+    </form>
+  )
+}
+```
+
+```javascript copy sandbox="https://codesandbox.io/s/react-hook-form-get-started-j5wxo"
+import { useForm } from "react-hook-form"
+
+export default function App() {
+  const { register, handleSubmit } = useForm()
+  const onSubmit = (data) => console.log(data)
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register("firstName")} />
+      <select {...register("gender")}>
+        <option value="female">female</option>
+        <option value="male">male</option>
+        <option value="other">other</option>
+      </select>
+      <input type="submit" />
+    </form>
+  )
+}
+```
+
+</ TabGroup>
+
+## Apply validation {#Applyvalidation}
+
+React Hook Form은 기존 [HTML 표준 form validation](https://developer.mozilla.org/en-US/docs/Learn/HTML/Forms/Form_validation)을 따름으로써 form validation을 쉽게 만듭니다.
+
+지원되는 validation 규칙 목록:
+
+- required
+- min
+- max
+- minLength
+- maxLength
+- pattern
+- validate
+
+각 규칙에 대한 자세한 내용은 [register 섹션](/docs#register)에서 확인할 수 있습니다.
+
+<TabGroup buttonLabels={["TS", "JS"]} >
+
+```typescript copy sandbox="https://codesandbox.io/s/react-hook-form-apply-validation-ts-forked-nmbyh"
+import { useForm, SubmitHandler } from "react-hook-form"
+
+interface IFormInput {
+  firstName: string
+  lastName: string
+  age: number
+}
+
+export default function App() {
+  const { register, handleSubmit } = useForm<IFormInput>()
+  const onSubmit: SubmitHandler<IFormInput> = (data) => console.log(data)
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register("firstName", { required: true, maxLength: 20 })} />
+      <input {...register("lastName", { pattern: /^[A-Za-z]+$/i })} />
+      <input type="number" {...register("age", { min: 18, max: 99 })} />
+      <input type="submit" />
+    </form>
+  )
+}
+```
+
+```javascript copy sandbox="https://codesandbox.io/s/react-hook-form-apply-validation-q5m00"
+import { useForm } from "react-hook-form"
+
+export default function App() {
+  const { register, handleSubmit } = useForm()
+  const onSubmit = (data) => console.log(data)
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register("firstName", { required: true, maxLength: 20 })} />
+      <input {...register("lastName", { pattern: /^[A-Za-z]+$/i })} />
+      <input type="number" {...register("age", { min: 18, max: 99 })} />
+      <input type="submit" />
+    </form>
+  )
+}
+```
+
+</TabGroup>
+
+## 기존 form 통합 {#Integratinganexistingform}
+
+기존 form을 통합하는 것은 간단합니다. 중요한 단계는 컴포넌트의 `ref`를 `register`하고 관련 속성을 입력에 할당하는 것입니다.
+
+<TabGroup buttonLabels={["TS", "JS"]} >
+
+```typescript copy sandbox="https://codesandbox.io/s/react-hook-form-adapting-existing-form-ts-uzfxm"
+import { Path, useForm, UseFormRegister, SubmitHandler } from "react-hook-form"
+
+interface IFormValues {
+  "First Name": string
+  Age: number
+}
+
+type InputProps = {
+  label: Path<IFormValues>
+  register: UseFormRegister<IFormValues>
+  required: boolean
+}
+
+// 다음 컴포넌트는 기존 Input 컴포넌트의 예시입니다.
+const Input = ({ label, register, required }: InputProps) => (
+  <>
+    <label>{label}</label>
+    <input {...register(label, { required })} />
+  </>
+)
+
+// React.forwardRef를 사용하여 ref를 전달할 수도 있습니다.
+const Select = React.forwardRef<
+  HTMLSelectElement,
+  { label: string } & ReturnType<UseFormRegister<IFormValues>>
+>(({ onChange, onBlur, name, label }, ref) => (
+  <>
+    <label>{label}</label>
+    <select name={name} ref={ref} onChange={onChange} onBlur={onBlur}>
+      <option value="20">20</option>
+      <option value="30">30</option>
+    </select>
+  </>
+))
+
+const App = () => {
+  const { register, handleSubmit } = useForm<IFormValues>()
+
+  const onSubmit: SubmitHandler<IFormValues> = (data) => {
+    alert(JSON.stringify(data))
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Input label="First Name" register={register} required />
+      <Select label="Age" {...register("Age")} />
+      <input type="submit" />
+    </form>
+  )
+}
+```
+
+```javascript copy sandbox="https://codesandbox.io/s/react-hook-form-adapting-existing-form-llbnn"
+import { useForm } from "react-hook-form"
+
+// 다음 컴포넌트는 기존 Input 컴포넌트의 예시입니다.
+const Input = ({ label, register, required }) => (
+  <>
+    <label>{label}</label>
+    <input {...register(label, { required })} />
+  </>
+)
+
+// React.forwardRef를 사용하여 ref를 전달할 수도 있습니다.
+const Select = React.forwardRef(({ onChange, onBlur, name, label }, ref) => (
+  <>
+    <label>{label}</label>
+    <select name={name} ref={ref} onChange={onChange} onBlur={onBlur}>
+      <option value="20">20</option>
+      <option value="30">30</option>
+    </select>
+  </>
+))
+
+const App = () => {
+  const { register, handleSubmit } = useForm()
+
+  const onSubmit = (data) => {
+    alert(JSON.stringify(data))
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Input label="First Name" register={register} required />
+      <Select label="Age" {...register("Age")} />
+      <input type="submit" />
+    </form>
+  )
+}
+```
+
+</TabGroup>
+
+## UI 라이브러리와 통합 {#IntegratingwithUIlibraries}
+
+React Hook Form은 외부 UI 컴포넌트 라이브러리와 쉽게 통합할 수 있습니다. 컴포넌트가 입력의 `ref`를 노출하지 않는 경우 Controller 컴포넌트를 사용하여 register 과정을 처리할 수 있습니다.
+
+<TabGroup buttonLabels={["TS", "JS"]} >
+
+```typescript copy sandbox="https://codesandbox.io/s/react-hook-form-with-ui-library-ts-forked-qjgkx"
+import Select from "react-select"
+import { useForm, Controller, SubmitHandler } from "react-hook-form"
+import { Input } from "@material-ui/core"
+
+interface IFormInput {
+  firstName: string
+  lastName: string
+  iceCreamType: { label: string; value: string }
+}
+
+const App = () => {
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      iceCreamType: {},
+    },
+  })
+
+  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+    console.log(data)
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Controller
+        name="firstName"
+        control={control}
+        render={({ field }) => <Input {...field} />}
+      />
+      <Controller
+        name="iceCreamType"
+        control={control}
+        render={({ field }) => (
+          <Select
+            {...field}
+            options={[
+              { value: "chocolate", label: "Chocolate" },
+              { value: "strawberry", label: "Strawberry" },
+              { value: "vanilla", label: "Vanilla" },
+            ]}
+          />
+        )}
+      />
+      <input type="submit" />
+    </form>
+  )
+}
+```
+
+```javascript copy sandbox="https://codesandbox.io/s/react-hook-form-with-ui-library-forked-fp5r3"
+import Select from "react-select"
+import { useForm, Controller } from "react-hook-form"
+import { Input } from "@material-ui/core"
+
+const App = () => {
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      firstName: "",
+      select: {},
+    },
+  })
+  const onSubmit = (data) => console.log(data)
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Controller
+        name="firstName"
+        control={control}
+        render={({ field }) => <Input {...field} />}
+      />
+      <Controller
+        name="select"
+        control={control}
+        render={({ field }) => (
+          <Select
+            {...field}
+            options={[
+              { value: "chocolate", label: "Chocolate" },
+              { value: "strawberry", label: "Strawberry" },
+              { value: "vanilla", label: "Vanilla" },
+            ]}
+          />
+        )}
+      />
+      <input type="submit" />
+    </form>
+  )
+}
+```
+
+</TabGroup>
+
+## 제어된 입력 통합 {#IntegratingControlledInputs}
+
+이 라이브러리는 비제어 컴포넌트와 기본 HTML 입력을 사용합니다. 그러나 [React-Select](https://github.com/JedWatson/react-select), [AntD](https://github.com/ant-design/ant-design) 및 [MUI](https://mui.com/)와 같은 외부 제어 컴포넌트와 작업하는 것을 피하기는 어렵습니다. 이를 간단하게 만들기 위해, 우리는 [Controller](/docs#Controller) 컴포넌트를 제공하여 register 과정을 간소화하면서도 사용자 정의 register을 사용할 수 있는 자유를 제공합니다.
+
+#### 컴포넌트 API 사용
+
+<TabGroup buttonLabels={["TS", "JS"]} >
+
+```typescript copy sandbox="https://codesandbox.io/s/react-hook-form-v6-controller-ts-jwyzw"
+import { useForm, Controller, SubmitHandler } from "react-hook-form"
+import { TextField, Checkbox } from "@material-ui/core"
+
+interface IFormInputs {
+  TextField: string
+  MyCheckbox: boolean
+}
+
+function App() {
+  const { handleSubmit, control, reset } = useForm<IFormInputs>({
+    defaultValues: {
+      MyCheckbox: false,
+    },
+  })
+  const onSubmit: SubmitHandler<IFormInputs> = (data) => console.log(data)
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Controller
+        name="MyCheckbox"
+        control={control}
+        rules={{ required: true }}
+        render={({ field }) => <Checkbox {...field} />}
+      />
+      <input type="submit" />
+    </form>
+  )
+}
+```
+
+```javascript copy sandbox="https://codesandbox.io/s/react-hook-form-v7-controller-5h1q5"
+import { TextField } from "@material-ui/core"
+import { useController, useForm } from "react-hook-form"
+
+function Input({ control, name }) {
+  const {
+    field,
+    fieldState: { invalid, isTouched, isDirty },
+    formState: { touchedFields, dirtyFields },
+  } = useController({
+    name,
+    control,
+    rules: { required: true },
+  })
+
+  return (
+    <TextField
+      onChange={field.onChange} // 값 변경 시 hook form에 전달
+      onBlur={field.onBlur} // 입력이 터치되거나 블러될 때 알림
+      value={field.value} // 입력 값
+      name={field.name} // 입력 이름 전달
+      inputRef={field.ref} // 입력 ref 전달
+    />
+  )
+}
+```
+
+</TabGroup>
+
+#### 훅 API 사용
+
+<TabGroup buttonLabels={["TS", "JS"]} >
+
+```typescript copy sandbox="https://codesandbox.io/s/usecontroller-forked-4t8cx"
+import * as React from "react"
+import { useForm, useController, UseControllerProps } from "react-hook-form"
+
+type FormValues = {
+  FirstName: string
+}
+
+function Input(props: UseControllerProps<FormValues>) {
+  const { field, fieldState } = useController(props)
+
+  return (
+    <div>
+      <input {...field} placeholder={props.name} />
+      <p>{fieldState.isTouched && "Touched"}</p>
+      <p>{fieldState.isDirty && "Dirty"}</p>
+      <p>{fieldState.invalid ? "invalid" : "valid"}</p>
+    </div>
+  )
+}
+
+export default function App() {
+  const { handleSubmit, control } = useForm<FormValues>({
+    defaultValues: {
+      FirstName: "",
+    },
+    mode: "onChange",
+  })
+  const onSubmit = (data: FormValues) => console.log(data)
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Input control={control} name="FirstName" rules={{ required: true }} />
+      <input type="submit" />
+    </form>
+  )
+}
+```
+
+```javascript copy sandbox="https://codesandbox.io/s/usecontroller-tefsc"
+import { TextField } from "@material-ui/core"
+import { useController, useForm } from "react-hook-form"
+
+function Input({ control, name }) {
+  const {
+    field,
+    fieldState: { invalid, isTouched, isDirty },
+    formState: { touchedFields, dirtyFields },
+  } = useController({
+    name,
+    control,
+    rules: { required: true },
+  })
+
+  return (
+    <TextField
+      onChange={field.onChange} // 값 변경 시 hook form에 전달
+      onBlur={field.onBlur} // 입력이 터치되거나 블러될 때 알림
+      value={field.value} // 입력 값
+      name={field.name} // 입력 이름 전달
+      inputRef={field.ref} // 입력 ref 전달
+    />
+  )
+}
+```
+
+</TabGroup>
+
+## 전역 상태와 통합 {#Integratingwithglobalstate}
+
+이 라이브러리는 상태 관리 라이브러리에 의존할 필요가 없지만, 쉽게 통합할 수 있습니다.
+
+```javascript copy
+import { useForm } from "react-hook-form"
+import { connect } from "react-redux"
+import updateAction from "./actions"
+
+export default function App(props) {
+  const { register, handleSubmit, setValue } = useForm({
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+    },
+  })
+  // 데이터를 Redux 스토어로 제출
+  const onSubmit = (data) => props.updateAction(data)
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register("firstName")} />
+      <input {...register("lastName")} />
+      <input type="submit" />
+    </form>
+  )
+}
+
+// Redux와 컴포넌트를 연결
+connect(
+  ({ firstName, lastName }) => ({ firstName, lastName }),
+  updateAction
+)(YourForm)
+```
+
+## Handle errors {#Handleerrors}
+
+React Hook Form은 form의 오류를 표시하기 위한 `errors` 객체를 제공합니다. `errors` 타입은 주어진 validation 제약 조건을 반환합니다. 다음 예제는 필수 validation 규칙을 보여줍니다.
+
+```javascript copy sandbox="https://codesandbox.io/s/react-hook-form-v7-errormessage-multiple-error-messages-3ur2z"
+import { useForm } from "react-hook-form"
+
+export default function App() {
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm()
+  const onSubmit = (data) => console.log(data)
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input
+        {...register("firstName", { required: true })}
+        aria-invalid={errors.firstName ? "true" : "false"}
+      />
+      {errors.firstName?.type === "required" && (
+        <p role="alert">First name is required</p>
+      )}
+
+      <input
+        {...register("mail", { required: "Email Address is required" })}
+        aria-invalid={errors.mail ? "true" : "false"}
+      />
+      {errors.mail && <p role="alert">{errors.mail.message}</p>}
+
+      <input type="submit" />
+    </form>
+  )
+}
+```
+
+## 서비스와 통합 {#Integratingwithservices}
+
+React Hook Form을 서비스와 통합하려면, 라이브러리의 내장 제출 처리를 사용할 수 있습니다. `<Form />` 컴포넌트는 form 데이터를 API 엔드포인트나 다른 서비스에 쉽게 보낼 수 있습니다. [Form 컴포넌트에 대해 자세히 알아보기](/docs/useform/form).
+
+```javascript
+import { Form } from "react-hook-form"
+
+function App() {
+  const { register, control } = useForm()
+
+  return (
+    <Form
+      action="/api/save" // FormData로 POST 요청을 보냅니다.
+      // encType={'application/json'} JSON 객체로 전환할 수도 있습니다.
+      onSuccess={() => {
+        alert("Your application is updated.")
+      }}
+      onError={() => {
+        alert("Submission has failed.")
+      }}
+      control={control}
+    >
+      <input {...register("firstName", { required: true })} />
+      <input {...register("lastName", { required: true })} />
+      <button>Submit</button>
+    </Form>
+  )
+}
+```
+
+## 스키마 validation {#SchemaValidation}
+
+우리는 [Yup](https://github.com/jquense/yup), [Zod](https://github.com/vriad/zod) , [Superstruct](https://github.com/ianstormtaylor/superstruct) 및 [Joi](https://github.com/hapijs/joi)와 같은 스키마 기반 form validation도 지원합니다. `schema`를 [useForm](/docs#useForm)의 옵션으로 전달하여 입력 데이터를 스키마에 맞게 validation하고, [errors](/docs#errors) 또는 유효한 결과를 반환합니다.
+
+**단계 1:** 프로젝트에 Yup을 설치합니다.
+
+```bash copy
+npm install @hookform/resolvers yup
+```
+
+**단계 2:** validation을 위한 스키마를 준비하고 React Hook Form에 입력을 register합니다.
+
+```javascript copy sandbox="https://codesandbox.io/s/react-hook-form-v7-validationschema-rm35t"
+import { useForm } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
+import * as yup from "yup"
+
+const schema = yup
+  .object({
+    firstName: yup.string().required(),
+    age: yup.number().positive().integer().required(),
+  })
+  .required()
+
+export default function App() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  })
+  const onSubmit = (data) => console.log(data)
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register("firstName")} />
+      <p>{errors.firstName?.message}</p>
+
+      <input {...register("age")} />
+      <p>{errors.age?.message}</p>
+
+      <input type="submit" />
+    </form>
+  )
+}
+```
+
+## React Native {#ReactNative}
+
+React Native에서도 동일한 성능 향상 및 개선을 얻을 수 있습니다. 입력 컴포넌트와 통합하려면 `Controller`로 감쌀 수 있습니다.
+
+```javascript copy sandbox="https://snack.expo.io/@bluebill1049/react-hook-form-v7---controller" expo
+import { Text, View, TextInput, Button, Alert } from "react-native"
+import { useForm, Controller } from "react-hook-form"
+
+export default function App() {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+    },
+  })
+  const onSubmit = (data) => console.log(data)
+
+  return (
+    <View>
+      <Controller
+        control={control}
+        rules={{
+          required: true,
+        }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            placeholder="First name"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+        name="firstName"
+      />
+      {errors.firstName && <Text>This is required.</Text>}
+
+      <Controller
+        control={control}
+        rules={{
+          maxLength: 100,
+        }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            placeholder="Last name"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+        name="lastName"
+      />
+
+      <Button title="Submit" onPress={handleSubmit(onSubmit)} />
+    </View>
+  )
+}
+```
+
+## TypeScript {#TypeScript}
+
+React Hook Form은 `TypeScript`로 빌드되었으며, form 값을 지원하기 위해 `FormData` 타입을 정의할 수 있습니다.
+
+```typescript copy sandbox="https://codesandbox.io/s/react-hook-form-typescript-qwk7b"
+import * as React from "react"
+import { useForm } from "react-hook-form"
+
+type FormData = {
+  firstName: string
+  lastName: string
+}
+
+export default function App() {
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>()
+  const onSubmit = handleSubmit((data) => console.log(data))
+  // firstName과 lastName은 올바른 타입을 가집니다.
+
+  return (
+    <form onSubmit={onSubmit}>
+      <label>First Name</label>
+      <input {...register("firstName")} />
+      <label>Last Name</label>
+      <input {...register("lastName")} />
+      <button
+        type="button"
+        onClick={() => {
+          setValue("lastName", "luo") // ✅
+          setValue("firstName", true) // ❌:  true는 string이 아닙니다.
+          errors.bill // ❌: 속성 bill은 존재하지 않습니다.
+        }}
+      >
+        SetValue
+      </button>
+    </form>
+  )
+}
+```
+
+## 디자인과 철학 {#Designandphilosophy}
+
+React Hook Form의 디자인과 철학은 사용자와 개발자의 경험에 중점을 둡니다. 라이브러리는 성능을 미세하게 조정하고 접근성을 향상시켜 사용자에게 더 부드러운 상호 작용 경험을 제공하는 것을 목표로 합니다. 성능 향상의 일부는 다음과 같습니다:
+
+- 프록시를 통한 form 상태 구독 모델 도입
+- 불필요한 계산 방지
+- 필요한 경우에만 컴포넌트 리렌더링 격리
+
+전반적으로, 이는 사용자가 애플리케이션과 상호 작용할 때 사용자 경험을 향상시킵니다. 개발자를 위해, 내장된 validation을 제공하고 HTML 표준과 긴밀하게 일치하여 강력한 validation 방법과 스키마 validation과의 통합을 더욱 확장할 수 있도록 합니다. 또한, TypeScript의 강력한 타입 검사를 통해 개발자에게 초기 빌드 시간 피드백을 제공하여 견고한 form 솔루션을 구축하는 데 도움을 줍니다.
+다음 논의에서는 [Bill](https://twitter.com/bluebill1049)이 일부 아이디어와 디자인 패턴을 소개합니다:
+
+<YouTube youTubeId="ZFxHdpzaEmM" />
