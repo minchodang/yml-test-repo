@@ -3,7 +3,7 @@ name: Update src for Translation
 on:
   push:
     branches:
-      - master-test
+      - master
 
 jobs:
   update-src:

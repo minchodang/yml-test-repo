@@ -32,9 +32,9 @@ jobs:
 
       - name: Checkout and Set Up Master Branch
         run: |
-          git checkout -B master origin/master-test
+          git checkout -B master origin/master
 
-      - name: Merge Upstream/master into master-test
+      - name: Merge Upstream/master into master
         run: |
           git merge upstream/master --no-edit
 
@@ -57,7 +57,7 @@ jobs:
         id: changes
         run: |
           # .github 디렉토리 제외한 변경 사항 확인
-          git diff upstream/master master-test -- . ':(exclude).github' > changes.diff
+          git diff upstream/master master -- . ':(exclude).github' > changes.diff
           if [ -s changes.diff ]; then
             echo "changes=true" >> $GITHUB_ENV
           else
@@ -148,7 +148,7 @@ jobs:
               "title": "Sync with upstream (removing .github directory)",
               "body": "This PR syncs the repository with upstream changes and removes the entire .github directory.",
               "head": "'"${BRANCH_NAME}"'",
-              "base": "master-test"
+              "base": "master"
             }'
         shell: bash
 
@@ -161,7 +161,7 @@ jobs:
           git checkout -B master-ko origin/master-ko || git checkout -B master-ko
 
           # master 브랜치의 모든 파일을 가져오되, src는 제외하고 master-ko의 기존 src 유지
-          git checkout master-test -- .
+          git checkout master -- .
           git checkout master-ko -- src
 
           git add .
