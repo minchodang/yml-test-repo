@@ -1,4 +1,4 @@
-name: Update src for Translation
+name: Update origin-src for Translation
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  update-src:
+  update-origin-src:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -21,55 +21,60 @@ jobs:
       - name: Fetch All Branches
         run: git fetch --all
 
-      - name: Compare src Directories
+      - name: Compare origin-src with src from origin/master
         run: |
-          # feature/docs-update 브랜치가 존재하면 해당 브랜치와 origin/master의 src를 비교합니다.
-          # 브랜치가 없을 경우 업데이트 필요로 간주합니다.
-          if git rev-parse --verify origin/feature/docs-update; then
-            git diff --quiet origin/master origin/feature/docs-update -- src || echo "CHANGED"
+          # 만약 origin-src 폴더가 없으면 업데이트가 필요한 것으로 간주합니다.
+          if [ ! -d origin-src ]; then
+            echo "CHANGED" > diff_status.txt
           else
-            echo "CHANGED"
-          fi > diff_status.txt
+            # 임시 폴더를 만들어 origin/master의 src를 추출합니다.
+            mkdir tmp-src
+            git archive origin/master src | tar -x -C tmp-src
+            # origin-src와 tmp-src/src를 재귀적으로 비교합니다.
+            diff -r origin-src tmp-src/src > /dev/null || echo "CHANGED" > diff_status.txt
+          fi
           if grep -q "CHANGED" diff_status.txt; then
-            echo "src changes detected."
+            echo "Differences detected between origin-src and origin/master's src."
           else
-            echo "No src changes detected."
+            echo "No differences detected."
           fi
 
-      - name: Update feature/docs-update Branch if Needed
+      - name: Update origin-src in master-ko Branch if Needed
         run: |
           if grep -q "CHANGED" diff_status.txt; then
-            BRANCH_NAME=update-src-$(date +%Y%m%d%H%M%S)
-            # feature/docs-update 브랜치가 존재하면 해당 브랜치에서, 없으면 새로 생성합니다.
-            if git rev-parse --verify origin/feature/docs-update; then
-              git checkout -B feature/docs-update origin/feature/docs-update
+            BRANCH_NAME=update-origin-src-$(date +%Y%m%d%H%M%S)
+            # master-ko 브랜치가 존재하면 해당 브랜치에서, 없으면 새로 생성합니다.
+            if git rev-parse --verify origin/master-ko; then
+              git checkout -B master-ko origin/master-ko
             else
-              git checkout -B feature/docs-update
+              git checkout -B master-ko
             fi
             # 업데이트를 위한 새 브랜치 생성
             git checkout -b $BRANCH_NAME
-            # origin/master의 최신 src 내용을 가져와서 교체합니다.
-            git checkout origin/master -- src
-            # 실제 변경사항이 있는지 확인 후 커밋합니다.
+            # 기존 origin-src 폴더 제거
+            rm -rf origin-src
+            # origin/master의 src 디렉토리 내용을 추출하여 origin-src로 복사합니다.
+            git archive origin/master src | tar -x
+            mv src origin-src
+            # 변경사항이 있는 경우 커밋 및 PR 생성
             if ! git diff --quiet; then
-              git add src
-              git commit -m "Update src with latest changes from master"
+              git add origin-src
+              git commit -m "Update origin-src with latest changes from origin/master's src"
               git push origin $BRANCH_NAME
-              # feature/docs-update 브랜치로 PR 생성 (변경사항 비교를 위해)
               curl -X POST \
                 -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
                 -H "Accept: application/vnd.github.v3+json" \
                 https://api.github.com/repos/${{ github.repository }}/pulls \
                 -d '{
-                  "title": "Update src with latest changes from master",
-                  "body": "This PR updates the src directory in feature/docs-update with the latest changes from master.",
+                  "title": "Update origin-src for translation",
+                  "body": "This PR updates the origin-src directory in master-ko with the latest src changes from origin/master.",
                   "head": "'"${BRANCH_NAME}"'",
-                  "base": "feature/docs-update"
+                  "base": "master-ko"
                 }'
             else
-              echo "No changes to commit after updating src."
+              echo "No changes to commit after updating origin-src."
             fi
           else
-            echo "No src changes detected. Skipping update."
+            echo "No changes detected. Skipping update."
           fi
         shell: bash
