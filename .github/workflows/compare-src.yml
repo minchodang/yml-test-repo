@@ -1,9 +1,9 @@
 name: Update origin-src for Translation
 
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *" # 매일 밤 12시 정각에 실행
 
 jobs:
   update-origin-src:
