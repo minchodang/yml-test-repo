@@ -21,6 +21,11 @@ jobs:
       - name: Fetch All Branches
         run: git fetch --all
 
+      - name: Configure Git
+        run: |
+          git config user.name "minchodang"
+          git config user.email "minsu910725@gmail.com"
+          
       - name: Compare origin-src with src from origin/master
         run: |
           # 만약 origin-src 폴더가 없으면 업데이트가 필요한 것으로 간주합니다.
