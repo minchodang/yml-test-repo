@@ -175,8 +175,7 @@ jobs:
           git checkout -B master-ko origin/master-ko || git checkout -B master-ko
 
           # master 브랜치의 모든 파일을 가져오되, src는 제외하고 master-ko의 기존 src 유지
-          git checkout master -- .
-          git checkout master-ko -- src
+          git checkout master -- . ":(exclude)src"
 
           git add .
           git commit -m "Update master-ko with upstream changes (excluding src)" || echo "No changes to commit"
