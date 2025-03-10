@@ -198,7 +198,7 @@ jobs:
           git checkout master -- . ":(exclude)src"
 
           # 날짜/시간 추가 (예: 2025/03/10 20:24)
-          DATE=$(date "+%Y/%m/%d %H:%M")
+          DATE=$(TZ="Asia/Seoul" date "+%Y/%m/%d %H:%M")
           git add .
           git commit -m "Update master-ko with upstream changes (excluding src) $DATE" || echo "No changes to commit"
         shell: bash
