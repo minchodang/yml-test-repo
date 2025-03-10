@@ -93,7 +93,6 @@ jobs:
           # origin/master의 src 디렉토리 내용을 추출 -> origin-src로 복사
           git archive origin/master src | tar -x
           mv src origin-src
-
         shell: bash
 
       - name: Compare with Existing Branches
@@ -103,40 +102,22 @@ jobs:
           ALL_INCLUDED=true
           DIFFERENT_BRANCHES=""
 
-          # 현재 master-ko 브랜치 상태의 "origin-src"와
-          # 각각의 update-origin-src-* 브랜치(원격) 비교
+          # 현재 master-ko 브랜치 상태에는 origin-src가 최신화된 상태.
+          # => master-ko 와 각각의 update-origin-src-* 브랜치(원격) 간 diff를 확인.
+
           for pr_ref in ${{ env.existing_pr_src_ref }}
           do
             echo "Fetching $pr_ref"
+            # 원격 브랜치를 로컬에 pr_ref-local 이라는 이름으로 가져옴
             git fetch origin "$pr_ref:$pr_ref-local"
 
-            # 로컬 temp-compare 브랜치 만들어서, master-ko 내용 거기에 덮어씌우기
-            #  (기존 브랜치랑 직접 merge/checkout 하면 혼동될 수 있으니 안전하게)
-            git checkout -B temp-compare "$pr_ref-local"
-
-            # 이제 temp-compare 브랜치에 있는 origin-src를 master-ko 기준으로 덮어씌우면,
-            #   diff --quiet 으로 비교하면 "동일" 여부를 알 수 있음
-            rm -rf origin-src
-            cp -r ../*origin-src??? ../???  # <== (여기서 CP를 해야하는데?? Actually we are in the same working directory)
-            # 사실상 "master-ko" 내용 -> temp-compare에 덮어써서 diff --quiet 확인
-            # 더 간단히는 "git diff master-ko $pr_ref-local -- origin-src"
-            #  방식으로도 가능하지만, 아래처럼 조금 풀어서 쓰겠습니다.
-
-            # 원래는 "git checkout" 등으로 할 수도 있지만, 여기서 shell copy 작업이 번거로우니
-            #   그냥 diff 명령어를 사용하겠습니다:
-
-            git checkout master-ko -- origin-src
-            # -> temp-compare 브랜치 상에 master-ko의 origin-src가 overwrite됨
-
-            if ! git diff --quiet; then
+            # master-ko vs $pr_ref-local 의 'origin-src' 디렉토리 비교
+            if ! git diff --quiet master-ko "$pr_ref-local" -- origin-src; then
               ALL_INCLUDED=false
-              # 수정이 발생 => 이 브랜치는 master-ko의 변경과 달라
               DIFFERENT_BRANCHES="$DIFFERENT_BRANCHES $pr_ref"
             fi
 
-            # cleanup
-            git checkout master-ko
-            git branch -D temp-compare
+            # 정리: 방금 만든 로컬 브랜치는 삭제
             git branch -D "$pr_ref-local"
           done
 
@@ -151,7 +132,6 @@ jobs:
 
           echo "ALL_INCLUDED=$ALL_INCLUDED"
           echo "DIFFERENT_BRANCHES=$DIFFERENT_BRANCHES"
-
         shell: bash
 
       - name: Close Different PR Branches
@@ -214,3 +194,4 @@ jobs:
               \"head\": \"${BRANCH_NAME}\",
               \"base\": \"master-ko\"
             }"
+        shell: bash
