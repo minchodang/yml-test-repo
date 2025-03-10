@@ -39,30 +39,26 @@ jobs:
         run: |
           set -e
 
-          # 1) 머지 시도 (충돌 발생 가능). --no-edit: Git이 자동 생성하는 기본 메시지를 사용
-          git merge upstream/master -X ours --no-edit || true
+          # 1) 충돌 가능성 있으므로 merge 시도 후 실패해도 스크립트 계속 (|| true)
+          git merge upstream/master --no-edit -X ours || true
 
-          # 2) 충돌이 여전히 남아 있는지 확인 (MERGE_HEAD 존재 시)
-          if [ -f .git/MERGE_HEAD ]; then
-            echo "Detected merge conflict. Forcing .github => ours"
-            # .github 충돌을 ours(삭제 상태)로 처리
+          # 2) .github 폴더 충돌이 났다면, ours(삭제 상태)로 강제
+          if [ -d ".github" ] || [ -f ".github" ]; then
             git checkout --ours .github || true
             git add .github || true
-            git rm -r .github || true
-            rm -rf .github
-
-            git add .
-            # Git 기본 메시지를 사용
-            git merge --continue --no-edit || true
           fi
 
-          # 3) 혹시 남아 있는 .github 폴더가 있으면 제거
-          if [ -d ".github" ]; then
-            rm -rf .github
-            git rm -r --cached .github || true
-            git add .
-            git commit --no-edit || echo "No changes to commit"
-          fi
+          # 3) .github 디렉토리를 완전히 제거
+          git rm -r --cached .github || true
+          rm -rf .github
+
+          # 4) 변경 사항 스테이지
+          git add .
+          echo "Staged files:"
+          git diff --cached --name-only
+
+          # 5) 커밋 (변경사항 있으면)
+          git commit -m "Auto sync with upstream (removing .github)" || echo "No changes to commit"
         shell: bash
 
       # ====== 2) 확인: .github 제외한 부분에 변경이 있는가? ======
@@ -197,7 +193,7 @@ jobs:
           # master에서 모든 파일을 가져오되, src는 제외하고 master-ko의 기존 src 유지
           git checkout master -- . ":(exclude)src"
 
-          # 날짜/시간 추가 (예: 2025/03/10 20:24)
+          # 변경사항 커밋
           DATE=$(TZ="Asia/Seoul" date "+%Y/%m/%d %H:%M")
           git add .
           git commit -m "Update master-ko with upstream changes (excluding src) $DATE" || echo "No changes to commit"
@@ -261,10 +257,10 @@ jobs:
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/pulls \
-            -d "{
-              \"title\": \"Update master-ko (excluding src)\",
-              \"body\": \"This PR updates the master-ko branch with upstream changes except for the src directory.\",
-              \"head\": \"${BRANCH_NAME}\",
-              \"base\": \"master-ko\"
-            }"
+            -d '{
+              "title": "Update master-ko (excluding src)",
+              "body": "This PR updates the master-ko branch with upstream changes except for the src directory.",
+              "head": "'"${BRANCH_NAME}"'",
+              "base": "master-ko"
+            }'
         shell: bash
