@@ -26,7 +26,9 @@ jobs:
           git config --global user.name "minchodang"
           git config --global user.email "minsu910725@gmail.com"
 
+      # 1) origin/master의 src와 현재 repo의 origin-src 폴더 비교
       - name: Compare origin-src with src from origin/master
+        id: compare
         run: |
           # 만약 origin-src 폴더가 없으면 업데이트가 필요한 것으로 간주
           if [ ! -d origin-src ]; then
@@ -38,46 +40,17 @@ jobs:
             # origin-src와 tmp-src/src 재귀 비교
             diff -r origin-src tmp-src/src > /dev/null || echo "CHANGED" > diff_status.txt
           fi
+
+          # GitHub 환경변수에 반영
           if [ -f diff_status.txt ]; then
+            echo "pr_needed=true" >> $GITHUB_ENV
             echo "Differences detected between origin-src and origin/master's src."
           else
+            echo "pr_needed=false" >> $GITHUB_ENV
             echo "No differences detected."
           fi
 
-      - name: Check Existing update-origin-src PRs
-        id: check-existing-pr
-        run: |
-          # CHANGED가 없다면 스킵할 것이므로, 우선 파일 존재 여부로 체크
-          if [ ! -f diff_status.txt ]; then
-            echo "pr_needed=false" >> $GITHUB_ENV
-            exit 0
-          fi
-
-          # 변경이 있다면 -> 기존 PR 목록 확인
-          # "update-origin-src-" 로 시작하는 head.ref를 찾는다
-          RESPONSE=$(curl -s \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls")
-
-          EXISTING_BRANCHES=$(echo "$RESPONSE" | jq -r '.[] | select(.head.ref | startswith("update-origin-src-")) | .head.ref')
-
-          # 공백/줄바꿈 -> 단일 스페이스로
-          EXISTING_BRANCHES=$(echo "$EXISTING_BRANCHES" | tr '\n' ' ')
-
-          if [[ -n "$EXISTING_BRANCHES" ]]; then
-            echo "existing_pr_src=true" >> $GITHUB_ENV
-            echo "existing_pr_src_ref=$EXISTING_BRANCHES" >> $GITHUB_ENV
-          else
-            echo "existing_pr_src=false" >> $GITHUB_ENV
-          fi
-
-          # pr_needed=true -> CHANGED도 있고, 곧 PR 처리해야 함
-          echo "pr_needed=true" >> $GITHUB_ENV
-
-          echo "Found existing branches: $EXISTING_BRANCHES"
-        shell: bash
-
+      # 2) pr_needed이면 -> origin-src 갱신
       - name: Prepare master-ko
         if: env.pr_needed == 'true'
         run: |
@@ -93,97 +66,56 @@ jobs:
           # origin/master의 src 디렉토리 내용을 추출 -> origin-src로 복사
           git archive origin/master src | tar -x
           mv src origin-src
+
+          # 변경사항 커밋 (변경이 있으면)
+          if ! git diff --quiet; then
+            git add origin-src
+            git commit -m "Update origin-src with latest changes from origin/master's src"
+          fi
         shell: bash
 
-      - name: Compare with Existing Branches
-        id: compare-existing-branch
+      # 3) 만약 pr_needed=true면, 기존 "update-origin-src-" 브랜치가 있는지 확인
+      - name: Check Existing update-origin-src PR
+        id: check-pr
+        if: env.pr_needed == 'true'
+        run: |
+          RESPONSE=$(curl -s \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls")
+          
+          # update-origin-src- 으로 시작하는 head.ref 찾기
+          EXISTING_BRANCHES=$(echo "$RESPONSE" | jq -r '.[] | select(.head.ref | startswith("update-origin-src-")) | .head.ref' | tr '\n' ' ')
+
+          if [[ -n "$EXISTING_BRANCHES" ]]; then
+            # 여러 개가 있을 수도 있지만, 여기서는 첫 번째만 사용 (원하시면 로직 수정 가능)
+            FIRST_BRANCH=$(echo "$EXISTING_BRANCHES" | awk '{print $1}')
+            echo "found_branch=$FIRST_BRANCH" >> $GITHUB_ENV
+            echo "existing_pr_src=true" >> $GITHUB_ENV
+            echo "Existing branch: $FIRST_BRANCH"
+          else
+            echo "existing_pr_src=false" >> $GITHUB_ENV
+            echo "No existing update-origin-src branches."
+          fi
+
+      # 4) 기존 브랜치가 있으면 -> force push 로 갱신(중복 PR 생기지 않음)
+      - name: Force Push to Existing Branch
         if: env.pr_needed == 'true' && env.existing_pr_src == 'true'
         run: |
-          ALL_INCLUDED=true
-          DIFFERENT_BRANCHES=""
+          BRANCH_NAME=${{ env.found_branch }}
+          echo "Force pushing master-ko -> $BRANCH_NAME"
+          git push origin master-ko:"$BRANCH_NAME" --force
 
-          # 현재 master-ko 브랜치 상태에는 origin-src가 최신화된 상태.
-          # => master-ko 와 각각의 update-origin-src-* 브랜치(원격) 간 diff를 확인.
-
-          for pr_ref in ${{ env.existing_pr_src_ref }}
-          do
-            echo "Fetching $pr_ref"
-            # 원격 브랜치를 로컬에 pr_ref-local 이라는 이름으로 가져옴
-            git fetch origin "$pr_ref:$pr_ref-local"
-
-            # master-ko vs $pr_ref-local 의 'origin-src' 디렉토리 비교
-            if ! git diff --quiet master-ko "$pr_ref-local" -- origin-src; then
-              ALL_INCLUDED=false
-              DIFFERENT_BRANCHES="$DIFFERENT_BRANCHES $pr_ref"
-            fi
-
-            # 정리: 방금 만든 로컬 브랜치는 삭제
-            git branch -D "$pr_ref-local"
-          done
-
-          if [ "$ALL_INCLUDED" = true ]; then
-            # 모든 기존 브랜치와 동일 => ko_src_diff=false
-            echo "ko_src_diff=false" >> $GITHUB_ENV
-            echo "DIFFERENT_BRANCHES=''" >> $GITHUB_ENV
-          else
-            echo "ko_src_diff=true" >> $GITHUB_ENV
-            echo "DIFFERENT_BRANCHES=$DIFFERENT_BRANCHES" >> $GITHUB_ENV
-          fi
-
-          echo "ALL_INCLUDED=$ALL_INCLUDED"
-          echo "DIFFERENT_BRANCHES=$DIFFERENT_BRANCHES"
-        shell: bash
-
-      - name: Close Different PR Branches
-        if: env.pr_needed == 'true' && env.ko_src_diff == 'true'
+      # 5) 기존 브랜치가 없으면 -> 새 브랜치 & PR 생성
+      - name: Create New PR Branch
+        if: env.pr_needed == 'true' && env.existing_pr_src == 'false'
         run: |
-          # 기존에 있던 PR이 master-ko 변경과 다르다면 -> 닫기
-          for pr_ref in ${{ steps.compare-existing-branch.outputs.DIFFERENT_BRANCHES }}
-          do
-            echo "Closing $pr_ref"
-            PR_NUMBER=$(curl -s \
-              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              -H "Accept: application/vnd.github.v3+json" \
-              "https://api.github.com/repos/${{ github.repository }}/pulls" \
-              | jq -r '.[] | select(.head.ref=="'$pr_ref'") | .number')
-
-            curl -X PATCH \
-              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              -H "Accept: application/vnd.github.v3+json" \
-              "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER" \
-              -d '{"state":"closed"}'
-          done
-
-      - name: Force Push to First Matched PR (if same)
-        if: env.pr_needed == 'true' && env.ko_src_diff == 'false'
-        run: |
-          # 이미 동일한 PR(브랜치)이 존재한다면, 그 중 첫 번째 브랜치에 그냥 push 해서 갱신
-          # (여러 개가 있을 수도 있지만, 여기서는 그냥 첫 번째만 사용)
-          PR_REF=$(echo "${{ env.existing_pr_src_ref }}" | awk '{print $1}')
-          echo "Force pushing to $PR_REF"
-
-          # 현재 master-ko 내용 커밋
-          if ! git diff --quiet; then
-            git add origin-src
-            git commit -m "Update origin-src with latest changes from origin/master's src"
-          fi
-
-          git push origin master-ko:"$PR_REF" --force
-
-      - name: Create New PR if No Existing or Different
-        if: env.pr_needed == 'true' && (env.existing_pr_src == 'false' || env.ko_src_diff == 'true')
-        run: |
-          # 새 브랜치 생성
           BRANCH_NAME=update-origin-src-$(date +%Y%m%d%H%M%S)
           git checkout master-ko
-          if ! git diff --quiet; then
-            git add origin-src
-            git commit -m "Update origin-src with latest changes from origin/master's src"
-          fi
           git checkout -b $BRANCH_NAME
           git push origin $BRANCH_NAME
 
-          # PR 생성
+          # 새 PR 생성
           curl -X POST \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
