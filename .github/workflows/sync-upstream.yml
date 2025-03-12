@@ -34,22 +34,26 @@ jobs:
         run: |
           git checkout -B master origin/master
 
+      # ***********************
+      #   충돌 자동 해결을 위해 -X theirs 추가
+      # ***********************
       - name: Merge Upstream/master into master
         run: |
-          git merge upstream/master --no-edit
+          # 업스트림 변경을 우선으로(충돌 발생 시 upstream/master 변경사항 사용)
+          git merge upstream/master -X theirs --no-edit
 
           # .github 디렉토리 하위 모든 파일 삭제
           git rm -r --cached .github || true
           rm -rf .github
 
-          # 변경 사항 스테이지
+          # 변경 사항 스테이징
           git add .
 
-          # 로그 출력: 현재 스테이지에 있는 파일 확인
+          # 로그 출력: 현재 스테이지에 있는 파일
           echo "Staged files:"
           git diff --cached --name-only
 
-          # 커밋 (변경 사항이 있을 경우)
+          # 변경 사항이 있을 경우에만 커밋
           git commit -m "Sync with upstream (removing .github directory)" || echo "No changes to commit"
         shell: bash
 
