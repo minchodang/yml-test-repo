@@ -41,6 +41,9 @@ jobs:
         run: |
           git remote add upstream https://github.com/react-hook-form/documentation
           git fetch upstream
+      
+      - name: Fetch All
+        run: git fetch --all
 
       - name: Checkout and Set Up Master Branch
         run: |
