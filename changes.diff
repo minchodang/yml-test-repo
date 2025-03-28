@@ -1,0 +1,13 @@
+diff --git a/src/content/docs/createFormControl.mdx b/src/content/docs/createFormControl.mdx
+index 26ee01dc..53c039fa 100644
+--- a/src/content/docs/createFormControl.mdx
++++ b/src/content/docs/createFormControl.mdx
+@@ -36,6 +36,8 @@ This function create the entire form state subscription and allow you to subscri
+  ```tsx
+  const props = createFormControl()
+ 
++{" "}
++
+ <FormProvider {...props} /> // ❌ You don't need provider
+ 
+  <input {...props.register('name')} /> // ✅ Direct use method from createFormControl
