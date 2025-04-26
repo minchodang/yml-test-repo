@@ -34,25 +34,27 @@ jobs:
       - name: Build exclude list
         shell: bash
         run: |
-          : >$GITHUB_WORKSPACE/exclude.lst
-          cd tmp-src/master-src
-          find . -type f -print0 | while IFS= read -r -d '' f; do
-            if grep -q '[가-힣]' "$f"; then
-              echo "${f#./}" >> $GITHUB_WORKSPACE/exclude.lst
-            fi
+          : > $GITHUB_WORKSPACE/exclude.lst
+          for root in src tmp-src/master-src; do
+            [ -d "$root" ] || continue
+            find "$root" -type f -print0 | while IFS= read -r -d '' f; do
+              if grep -q '[가-힣]' "$f"; then
+                echo "${f#$root/}" >> $GITHUB_WORKSPACE/exclude.lst
+              fi
+            done
           done
+          sort -u $GITHUB_WORKSPACE/exclude.lst -o $GITHUB_WORKSPACE/exclude.lst
 
-      - name: Detect changes between local src and upstream src
+      - name: Detect changes
         id: compare
         shell: bash
         run: |
           mkdir -p src
           CHANGES=$(rsync -anic --delete --exclude-from=$GITHUB_WORKSPACE/exclude.lst tmp-src/master-src/ src/ | tail -n +2)
           if [ -n "$CHANGES" ]; then
-            echo "pr_needed=true" >>$GITHUB_ENV
-            echo "$CHANGES"
+            echo "pr_needed=true" >> $GITHUB_ENV
           else
-            echo "pr_needed=false" >>$GITHUB_ENV
+            echo "pr_needed=false" >> $GITHUB_ENV
           fi
 
       - name: Update src content
@@ -68,7 +70,7 @@ jobs:
           git add -A src
           git commit -m "Sync src with latest origin/master (exclude Korean translations)"
 
-      - name: Find existing sync-src PR
+      - name: Find existing PR
         if: ${{ env.pr_needed == 'true' }}
         id: pr-branch
         env:
@@ -78,7 +80,7 @@ jobs:
           branch=$(gh pr list --json headRefName --jq '.[] | select(.headRefName | startswith("sync-src-")) | .headRefName' | head -n1)
           echo "branch=$branch" >> $GITHUB_OUTPUT
 
-      - name: Force-push to existing branch
+      - name: Force push to existing branch
         if: ${{ env.pr_needed == 'true' && steps.pr-branch.outputs.branch != '' }}
         shell: bash
         run: |
@@ -93,4 +95,4 @@ jobs:
           new_branch=sync-src-${{ github.run_id }}
           git checkout -b "$new_branch"
           git push origin "$new_branch"
-          gh pr create --title "Sync src with upstream (exclude translated files)" --body "This PR auto-updates **src/** with the latest changes from **origin/master**, excluding files that already contain Korean translations." --head "$new_branch" --base master-ko
+          gh pr create --title "Sync src with upstream (exclude translated files)" --body "Auto-syncs src/ with the latest origin/master, excluding files containing Korean text." --head "$new_branch" --base master-ko
