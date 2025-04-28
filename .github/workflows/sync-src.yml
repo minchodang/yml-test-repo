@@ -35,23 +35,19 @@ jobs:
         shell: bash
         run: |
           : > $GITHUB_WORKSPACE/exclude.lst
-          for root in src tmp-src/master-src; do
-            [ -d "$root" ] || continue
-            find "$root" -type f -print0 | while IFS= read -r -d '' f; do
-              if grep -q '[가-힣]' "$f"; then
-                echo "${f#$root/}" >> $GITHUB_WORKSPACE/exclude.lst
-              fi
-            done
-          done
-          sort -u $GITHUB_WORKSPACE/exclude.lst -o $GITHUB_WORKSPACE/exclude.lst
+          cd tmp-src/master-src
+          LC_ALL=C grep -Ilr --exclude-dir=.git -e '[가-힣]' \
+            | sed 's|^\./||' \
+            | sort -u \
+            >> $GITHUB_WORKSPACE/exclude.lst
+          cd -
 
       - name: Detect changes
         id: compare
         shell: bash
         run: |
           mkdir -p src
-          CHANGES=$(rsync -anic --delete --exclude-from=$GITHUB_WORKSPACE/exclude.lst tmp-src/master-src/ src/ | tail -n +2)
-          if [ -n "$CHANGES" ]; then
+          if rsync -a --delete --exclude-from=$GITHUB_WORKSPACE/exclude.lst --dry-run tmp-src/master-src/ src/ | grep -qE '^(deleting|\>f|\>f\+\+|\*deleting)'; then
             echo "pr_needed=true" >> $GITHUB_ENV
           else
             echo "pr_needed=false" >> $GITHUB_ENV
@@ -68,7 +64,7 @@ jobs:
           fi
           rsync -a --delete --exclude-from=$GITHUB_WORKSPACE/exclude.lst tmp-src/master-src/ src/
           git add -A src
-          git commit -m "Sync src with latest origin/master (exclude Korean translations)"
+          git commit -m "Sync src with latest origin/master (exclude Korean translations)" || true
 
       - name: Find existing PR
         if: ${{ env.pr_needed == 'true' }}
