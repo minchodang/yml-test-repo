@@ -35,12 +35,11 @@ jobs:
         shell: bash
         run: |
           : > $GITHUB_WORKSPACE/exclude.lst
-          cd tmp-src/master-src
-          LC_ALL=C grep -Ilr --exclude-dir=.git -e '[가-힣]' \
-            | sed 's|^\./||' \
-            | sort -u \
-            >> $GITHUB_WORKSPACE/exclude.lst
-          cd -
+          for root in src tmp-src/master-src; do
+            [ -d "$root" ] || continue
+            (cd "$root" && LC_ALL=C grep -Ilr --exclude-dir=.git -e '[가-힣]' | sort -u) >> $GITHUB_WORKSPACE/exclude.lst
+          done
+          sort -u -o $GITHUB_WORKSPACE/exclude.lst $GITHUB_WORKSPACE/exclude.lst
 
       - name: Detect changes
         id: compare
@@ -64,7 +63,7 @@ jobs:
           fi
           rsync -a --delete --exclude-from=$GITHUB_WORKSPACE/exclude.lst tmp-src/master-src/ src/
           git add -A src
-          git commit -m "Sync src with latest origin/master (exclude Korean translations)" || true
+          git commit -m "Sync src with origin/master (exclude Korean translations)" || true
 
       - name: Find existing PR
         if: ${{ env.pr_needed == 'true' }}
