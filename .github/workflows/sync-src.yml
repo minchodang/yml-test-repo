@@ -46,12 +46,13 @@ jobs:
         shell: bash
         run: |
           mkdir -p src
-          # -a: archive, -i: itemize changes, -n: dry-run
-          # 첫 줄 'sending incremental file list' 제거 뒤 한 줄이라도 남으면 변경 있음
-          if rsync -ain --delete \
-               --exclude-from="$GITHUB_WORKSPACE/exclude.lst" \
-               tmp-src/master-src/ src/ \
-               | tail -n +2 | grep -q .; then
+
+          # rsync 결과(헤더 제외)를 변수에 담음
+          changes=$(rsync -ain --delete \
+                    --exclude-from="$GITHUB_WORKSPACE/exclude.lst" \
+                    tmp-src/master-src/ src/ | tail -n +2)
+
+          if [ -n "$changes" ]; then
             echo "pr_needed=true" >> $GITHUB_ENV
           else
             echo "pr_needed=false" >> $GITHUB_ENV
