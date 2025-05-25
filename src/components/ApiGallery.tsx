@@ -17,7 +17,9 @@ export default function ApiGallery() {
     )
 
     if (version !== 7) {
-      router.push(`https://legacy.react-hook-form.com/v${version}/api`)
+      router.push(
+        `https://react-hook-form-website-git-leagcy-hook-form.vercel.app/${version}/api`
+      )
     } else {
       router.push(`/v${version}/docs/`)
     }
@@ -165,7 +167,6 @@ export default function ApiGallery() {
               <h3>
                 <code>{`</>`}</code>createFormControl
               </h3>
-              <p className={styles.beta}>BETA @v7.55.0-next.3</p>
               <p>
                 Create form control object and subscribe form state outside of
                 React component, access methods without context.
