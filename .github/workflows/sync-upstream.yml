@@ -42,9 +42,14 @@ jobs:
           # 업스트림 변경을 우선으로(충돌 발생 시 upstream/master 변경사항 사용)
           git merge upstream/master -X theirs --no-edit
 
-          # .github 디렉토리 하위 모든 파일 삭제
-          git rm -r --cached .github || true
-          rm -rf .github
+          # .github 및 .vscode 디렉토리 삭제
+          for DIR in .github .vscode; do
+            git rm -r --cached "$DIR" || true
+            rm -rf "$DIR"
+          done
+
+          # .gitignore 유지
+          git checkout --ours .gitignore || true
 
           # 변경 사항 스테이징
           git add .
@@ -54,7 +59,7 @@ jobs:
           git diff --cached --name-only
 
           # 변경 사항이 있을 경우에만 커밋
-          git commit -m "Sync with upstream (removing .github directory)" || echo "No changes to commit"
+          git commit -m "Sync with upstream (remove .github & .vscode, keep .gitignore)" || echo "No changes to commit"
         shell: bash
 
       - name: Check for Changes
@@ -172,17 +177,38 @@ jobs:
 
       - name: Prepare master-ko Update
         run: |
+          set -euo pipefail
           # 최신 master 브랜치 체크아웃
           git checkout master
           # 원격의 master-ko 브랜치가 있으면 가져오고, 없으면 새로 생성
           git fetch origin master-ko || true
           git checkout -B master-ko origin/master-ko || git checkout -B master-ko
 
-          # master 브랜치의 모든 파일을 가져오되, src는 제외하고 master-ko의 기존 src 유지
+          # 1) master-ko 패키지 백업
+          cp package.json /tmp/pkg_old.json || true
+
+          # 2) master → master-ko (src 제외) 복사
           git checkout master -- . ":(exclude)src"
 
+          # 3) package.json 깊이 병합
+          node <<'NODE'
+          const fs = require('fs');
+          const merge = (a,b)=>{for(const k in b){if(b[k]&&typeof b[k]==='object'&&!Array.isArray(b[k]))a[k]=merge(a[k]||{},b[k]);else if(!(k in a))a[k]=b[k];}return a;}
+          const oldPkg = fs.existsSync('/tmp/pkg_old.json') ? JSON.parse(fs.readFileSync('/tmp/pkg_old.json','utf8')) : {};
+          const newPkg = JSON.parse(fs.readFileSync('package.json','utf8'));
+          ['dependencies','devDependencies','peerDependencies','scripts'].forEach(k=>{
+            newPkg[k]=merge(newPkg[k]||{},oldPkg[k]||{});
+          });
+          fs.writeFileSync('package.json',JSON.stringify(newPkg,null,2)+'\n');
+          NODE
+
+          # 4) 로컬 전용 파일 복원 (존재할 때만)
+          for f in pnpm-lock.yaml .yarnrc.yml README.md; do
+            git ls-files --error-unmatch "$f" >/dev/null 2>&1 && git checkout master-ko -- "$f" || true
+          done
+
           git add .
-          git commit -m "Update master-ko with upstream changes (excluding src)" || echo "No changes to commit"
+          git commit -m "Update master-ko (deep-merge package.json, keep local files including README.md)" || echo "No changes to commit"
         shell: bash
 
       - name: Compare Changes with Existing master-ko PRs
