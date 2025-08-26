@@ -7,13 +7,6 @@ export function SponsorsList() {
 
       <div className={styles.logoGroup}>
         <a
-          href="https://www.casinoreviews.net/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="/images/casinoreviews.png" alt="Casino Reviews" />
-        </a>
-        <a
           href="https://www.beekai.com/"
           target="_blank"
           rel="noopener noreferrer"
@@ -30,23 +23,24 @@ export function SponsorsList() {
         >
           <img src="/images/route4me.png" alt="route4me" />
         </a>
-        <a href="https://twicsy.com/" target="_blank" rel="noopener noreferrer">
-          <img
-            className={styles.twicsy}
-            src="/images/twicsy.png"
-            alt="twicsy"
-          />
-        </a>
         <a
-          href="https://www.sanity.io//"
+          href="https://www.follower24.de/"
           target="_blank"
           rel="noopener noreferrer"
         >
           <img
             className={styles.twicsy}
-            src="/images/sanity.png"
-            alt="sanity io"
+            src="/images/follower24.png"
+            alt="follower24"
           />
+        </a>
+        <a
+          href="https://opencollective.com/react-hook-form"
+          target="_blank"
+          className={styles.add}
+          rel="noopener noreferrer"
+        >
+          + Sponsor
         </a>
       </div>
     </div>
