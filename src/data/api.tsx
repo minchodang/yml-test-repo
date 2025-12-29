@@ -268,7 +268,8 @@ const onSubmit = (data) => {
         <p>
           <b className={typographyStyles.note}>Note:</b> only registered fields
           with a <code>ref</code> will work. Custom registered inputs do not
-          apply. For example: <code>{`register('test') // doesn't work`}</code>{" "}
+          apply. For example:{" "}
+          <code>{`register('test') // doesn't work`}</code>{" "}
         </p>
 
         <p>
@@ -2069,8 +2070,8 @@ setValue('notRegisteredInput', { test: '1', test2: '2' }); // ✅ sugar syntax t
                     </Link>
                     <p>
                       <b className={typographyStyles.note}>Important: </b>This
-                      is only applicable to <strong>built-in</strong> validation
-                      only.
+                      is only applicable to <strong>built-in</strong>{" "}
+                      validation.
                     </p>
                   </p>
                 </td>
@@ -2753,39 +2754,6 @@ setValue('notRegisteredInput', { test: '1', test2: '2' }); // ✅ sugar syntax t
         </tr>
         <tr>
           <td>
-            <code>defaultValue</code>
-          </td>
-          <td>
-            <code className={typographyStyles.typeText}>unknown</code>
-          </td>
-          <td></td>
-          <td>
-            <p>
-              <b className={typographyStyles.note}>Important:</b> Can not apply{" "}
-              <code>undefined</code> to <code>defaultValue</code> or{" "}
-              <code>defaultValues</code> at <code>useForm</code>.
-            </p>
-            <ul>
-              <li>
-                <p>
-                  You need to either set <code>defaultValue</code> at the
-                  field-level or <code>useForm</code>'s{" "}
-                  <code>defaultValues</code>. <code>undefined</code> is not a
-                  valid value.
-                </p>
-              </li>
-              <li>
-                <p>
-                  If your form will invoke <code>reset</code> with default
-                  values, you will need to provide <code>useForm</code> with{" "}
-                  <code>defaultValues</code>.
-                </p>
-              </li>
-            </ul>
-          </td>
-        </tr>
-        <tr>
-          <td>
             <code>rules</code>
           </td>
           <td>
@@ -2838,6 +2806,54 @@ setValue('notRegisteredInput', { test: '1', test2: '2' }); // ✅ sugar syntax t
               <code>disabled</code> prop will be returned from `field` prop.
               Controlled input will be disabled and its value will be omitted
               from the submission data.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <code>defaultValue</code>
+          </td>
+          <td>
+            <code className={typographyStyles.typeText}>unknown</code>
+          </td>
+          <td></td>
+          <td>
+            <p>
+              <b className={typographyStyles.note}>Important:</b> Can not apply{" "}
+              <code>undefined</code> to <code>defaultValue</code> or{" "}
+              <code>defaultValues</code> at <code>useForm</code>.
+            </p>
+            <ul>
+              <li>
+                <p>
+                  You need to either set <code>defaultValue</code> at the
+                  field-level or <code>useForm</code>'s{" "}
+                  <code>defaultValues</code>. <code>undefined</code> is not a
+                  valid value. If you used <code>defaultValues</code> at{" "}
+                  <code>useForm</code>, skip using this prop.
+                </p>
+              </li>
+              <li>
+                <p>
+                  If your form will invoke <code>reset</code> with default
+                  values, you will need to provide <code>useForm</code> with{" "}
+                  <code>defaultValues</code>.
+                </p>
+              </li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <code>exact</code>
+          </td>
+          <td>
+            <code className={typographyStyles.typeText}>boolean = false</code>
+          </td>
+          <td></td>
+          <td>
+            <p>
+              This prop will enable an exact match for input name subscriptions, default to true.
             </p>
           </td>
         </tr>
