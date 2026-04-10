@@ -32,8 +32,8 @@ This function can manually clear errors in the form.
 
 <Admonition type="important" title="Rules">
 
-- This will not affect the validation rules attached to each inputs.
-- This method doesn't affect validation rules or `isValid` formState.
+- This method does not affect the validation rules attached to inputs and does not
+  impact <code>formState.isValid</code>.
 
 </Admonition>
 
@@ -43,7 +43,7 @@ This function can manually clear errors in the form.
 
 <TabGroup buttonLabels={["TS", "JS"]}>
 
-```typescript sandbox="https://codesandbox.io/s/react-hook-form-v7-ts-clearerrors-w3ymx"
+```tsx sandbox="https://codesandbox.io/s/react-hook-form-v7-ts-clearerrors-w3ymx"
 import * as React from "react"
 import { useForm } from "react-hook-form"
 
