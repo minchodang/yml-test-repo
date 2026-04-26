@@ -1,6 +1,7 @@
 ---
 title: useFormContext
-description: React Context API for hook form
+description: Access useForm methods anywhere in the component tree.
+metaDescription: Access all useForm methods deep in the component tree without prop drilling, using React Hook Form's built-in context API.
 sidebar: apiLinks
 ---
 
@@ -39,7 +40,6 @@ const methods = useFormContext() // retrieve those props
 **Example:**
 
 ```javascript copy codesandbox="https://codesandbox.io/s/react-hook-form-v7-form-context-ytudi"
-import React from "react"
 import { useForm, FormProvider, useFormContext } from "react-hook-form"
 
 export default function App() {
