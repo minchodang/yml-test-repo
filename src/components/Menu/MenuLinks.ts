@@ -107,12 +107,14 @@ export const apiLinks: Pages = [
       { pathname: "/docs/useform/unregister", name: "unregister" },
       { pathname: "/docs/useform/formstate", name: "formState" },
       { pathname: "/docs/useform/watch", name: "watch" },
+      { pathname: "/docs/useform/subscribe", name: "subscribe" },
       { pathname: "/docs/useform/handlesubmit", name: "handleSubmit" },
       { pathname: "/docs/useform/reset", name: "reset" },
       { pathname: "/docs/useform/resetfield", name: "resetField" },
       { pathname: "/docs/useform/seterror", name: "setError" },
       { pathname: "/docs/useform/clearerrors", name: "clearErrors" },
       { pathname: "/docs/useform/setvalue", name: "setValue" },
+      { pathname: "/docs/useform/setvalues", name: "setValues" },
       { pathname: "/docs/useform/setfocus", name: "setFocus" },
       { pathname: "/docs/useform/getvalues", name: "getValues" },
       { pathname: "/docs/useform/getfieldstate", name: "getFieldState" },
@@ -144,6 +146,12 @@ export const apiLinks: Pages = [
   {
     pathname: "/docs/usewatch",
     name: "useWatch",
+    pages: [
+      {
+        pathname: "/docs/usewatch/watch",
+        name: "Watch",
+      },
+    ],
   },
   {
     pathname: "/docs/useformstate",
@@ -153,11 +161,19 @@ export const apiLinks: Pages = [
         pathname: "/docs/useformstate/errormessage",
         name: "ErrorMessage",
       },
+      {
+        pathname: "/docs/useformstate/formstatesubscribe",
+        name: "FormStateSubscribe",
+      },
     ],
   },
   {
     pathname: "/docs/usefieldarray",
     name: "useFieldArray",
+  },
+  {
+    pathname: "/docs/uselens",
+    name: "useLens",
   },
   {
     pathname: "/docs/createFormControl",
