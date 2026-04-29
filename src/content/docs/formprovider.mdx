@@ -1,6 +1,7 @@
 ---
 title: FormProvider
-description: A component to provide React Context
+description: Share form context across deeply nested components.
+metaDescription: Wrap your form tree with FormProvider to share useForm methods across deeply nested components without passing props manually.
 sidebar: apiLinks
 ---
 
@@ -27,8 +28,6 @@ This following table applied to `FormProvider`, `useFormContext` accepts no argu
 ---
 
 ```javascript copy sandbox="https://codesandbox.io/s/react-hook-form-v7-form-context-ytudi"
-import React from "react"
-
 import { useForm, FormProvider, useFormContext } from "react-hook-form"
 
 export default function App() {
