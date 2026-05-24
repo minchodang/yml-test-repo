@@ -13,6 +13,7 @@ export const Doc = defineDocumentType(() => ({
   fields: {
     title: { type: "string", required: true },
     description: { type: "string", required: true },
+    metaDescription: { type: "string", required: false },
     sidebar: {
       type: "enum",
       options: [
@@ -21,6 +22,7 @@ export const Doc = defineDocumentType(() => ({
         "tsLinks",
         "faqLinks",
         "getStartedLinks",
+        "migrateV7ToV8Links",
       ],
       required: true,
     },
