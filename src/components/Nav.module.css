@@ -15,7 +15,7 @@
 
 .icon svg {
   height: 16px;
-  transition: 0.3s all;
+  transition: var(--transition);
   margin-top: 6px;
 }
 
@@ -35,6 +35,7 @@
   width: 100%;
   position: fixed;
   height: 48px;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
 }
 
 :global(.dark) .actionButtonGroup {
@@ -55,12 +56,19 @@
   flex: 1;
   font-size: 0.5rem;
   border-left: 1px solid var(--color-button-blue);
-  padding: 5px 0;
+  padding: var(--space-1) 0;
   text-align: center;
   color: white;
   text-decoration: none;
   position: relative;
   min-width: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+
+  > * {
+    flex: 1
+  }
 }
 
 .actionButtonGroup a:first-child {
@@ -74,6 +82,7 @@
 .actionButtonGroup a > span {
   display: block;
   height: 20px;
+  line-height: 20px;
 }
 
 .gitHubButtonWrap {
@@ -90,10 +99,10 @@
 }
 
 .iconWrapper {
-  height: 15px;
   width: 100%;
   display: flex;
   justify-content: center;
+  max-height: 20px;
 }
 
 .iconWrapper > * {
@@ -102,12 +111,13 @@
 
 a.legacyLink {
   text-decoration: none;
-  font-size: 0.8rem;
+  font-size: var(--text-sm);
   font-weight: 500;
   color: white;
-  border: 1px solid #234081;
-  border-radius: 4px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
   padding: 0 0.5rem;
+  transition: var(--transition);
 }
 
 .mobileNav {
@@ -176,7 +186,7 @@ a.legacyLink {
   }
 
   .menuExpandLink {
-    font-size: 0.7rem;
+    font-size: var(--text-sm);
     position: relative;
     top: -2px;
     cursor: default;
@@ -215,7 +225,7 @@ a.legacyLink {
     margin: 0 auto;
     height: auto;
     max-width: 610px;
-    padding: 13px 8px;
+    padding: var(--space-3) var(--space-2);
   }
 
   :global(.light) .actionButtonGroup {
@@ -223,10 +233,10 @@ a.legacyLink {
   }
 
   .actionButtonGroup a {
-    font-size: 0.7rem;
+    font-size: var(--text-sm);
     flex: none;
     border: none;
-    padding: 2px 0;
+    padding: var(--space-1) 0;
   }
   :global(.dark) .actionButtonGroup a {
     color: white;
@@ -234,6 +244,7 @@ a.legacyLink {
   .tools {
     color: white;
     height: 29px;
+    font-size: 1rem;
     display: inline-block;
   }
 
@@ -250,7 +261,7 @@ a.legacyLink {
 
   .menuExpand {
     transition: 0.25s all ease-in;
-    padding: 6px 10px 0;
+    padding: var(--space-1) var(--space-2) 0;
     background: var(--color-button-blue);
     transform: translateY(-80px);
     opacity: 0;
@@ -265,10 +276,10 @@ a.legacyLink {
 
   .menuExpand a {
     text-align: left;
-    padding: 2px 0;
+    padding: var(--space-1) 0;
     display: block;
     width: 100%;
-    margin-bottom: 7px;
+    margin-bottom: var(--space-2);
   }
 
   .actionButtonGroup,
@@ -279,7 +290,7 @@ a.legacyLink {
 
 @media (min-width: 1280px) {
   .menuExpandLink {
-    font-size: 0.8rem;
+    font-size: var(--text-sm);
     top: -1px;
   }
 
@@ -296,6 +307,6 @@ a.legacyLink {
   }
 
   .actionButtonGroup a {
-    font-size: 0.8rem;
+    font-size: var(--text-sm);
   }
 }
