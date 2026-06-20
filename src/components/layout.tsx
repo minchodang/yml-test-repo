@@ -9,6 +9,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
   const location = router
 
   const [show, setShow] = useState(false)
+
   const scrollHandler = () => {
     if (window.scrollY > 75) {
       setShow(true)
@@ -19,8 +20,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
   const editLink = getEditLink(location.pathname)
 
   useEffect(() => {
-    window.addEventListener("scroll", scrollHandler)
-
+    window.addEventListener("scroll", scrollHandler, { passive: true })
     return () => {
       window.removeEventListener("scroll", scrollHandler)
     }
@@ -28,24 +28,24 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
   return (
     <>
-      {/*<div className="banner">*/}
-      {/*  <p>*/}
-      {/*    Next-gen <strong>form building</strong> platform with code generation.*/}
-      {/*    <a*/}
-      {/*      href="https://beekai.com/"*/}
-      {/*      title="Learn more about BEEKAI form builder"*/}
-      {/*      target="_blank"*/}
-      {/*      rel="noreferrer"*/}
-      {/*    >*/}
-      {/*      Find out more*/}
-      {/*    </a>*/}
-      {/*  </p>*/}
-      {/*</div>*/}
       <a className="skip-main" href="#main">
         Skip to content
       </a>
       <Nav />
-      {children}
+      <div
+        key={
+          router.asPath.split("#")[0].startsWith("/docs/")
+            ? "docs"
+            : router.asPath.split("#")[0]
+        }
+        className={
+          router.asPath.split("#")[0].startsWith("/docs/")
+            ? ""
+            : "pageTransition"
+        }
+      >
+        {children}
+      </div>
       <Animate
         play={show}
         start={{ opacity: 0, visibility: "hidden" }}
