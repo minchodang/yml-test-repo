@@ -1,6 +1,7 @@
 ---
 title: control
-description: Take control of the form
+description: The control object for registering controlled inputs.
+metaDescription: The control object returned by useForm, required to register controlled inputs via the Controller component and useController hook.
 sidebar: apiLinks
 ---
 
@@ -14,14 +15,13 @@ This object contains methods for registering components into React Hook Form.
 
 </Admonition>
 
-**Examples:**
+##### Examples:
 
 ---
 
 <TabGroup buttonLabels={["TS", "JS"]}>
 
-```typescript copy sandbox="https://codesandbox.io/s/react-hook-form-v6-controller-ts-jwyzw"
-import React from "react"
+```tsx copy sandbox="https://codesandbox.io/s/react-hook-form-v6-controller-ts-jwyzw"
 import { useForm, Controller } from "react-hook-form"
 import { TextField } from "@material-ui/core"
 
@@ -36,7 +36,7 @@ function App() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Controller
-        as={TextField}
+        render={({ field }) => <input {...field} />}
         name="firstName"
         control={control}
         defaultValue=""

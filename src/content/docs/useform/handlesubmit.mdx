@@ -1,6 +1,7 @@
 ---
 title: handleSubmit
-description: Ready to send to the server
+description: Validate inputs and invoke your submit callback.
+metaDescription: Validate form inputs and invoke your submit callback with typed form data, or pass errors to an error handler on validation failure.
 sidebar: apiLinks
 ---
 
@@ -19,25 +20,19 @@ This function will receive the form data if form validation is successful.
 
 <Admonition type="important" title="Rules">
 
-- You can easily submit form asynchronously with handleSubmit.
-
-  ```javascript copy
-  handleSubmit(onSubmit)()
-
-  // You can pass an async function for asynchronous validation.
-  handleSubmit(async (data) => await fetchAPI(data))
-  ```
-
 - `disabled` inputs will appear as `undefined` values in form values. If you want to prevent users from updating an input and wish to retain the form value, you can use `readOnly` or disable the entire &lt;fieldset /&gt;. Here is an [example](https://codesandbox.io/s/react-hook-form-disabled-inputs-oihxx).
-- `handleSubmit` function will not swallow errors that occurred inside your onSubmit callback, so we recommend you to try and catch inside async request and handle those errors gracefully for your customers.
+- `handleSubmit` function will not swallow errors that occurred inside your onSubmit callback, so we recommend you to try and catch inside async request and handle those errors gracefully for your customers. Use `setError` inside the catch block to register a server-side error — this also ensures `formState.isSubmitSuccessful` is set to `false`.
 
   ```javascript
-  const onSubmit = async () => {
+  const onSubmit = async (data) => {
     // async request which may result error
     try {
       // await fetch()
     } catch (e) {
-      // handle your error
+      setError("root.serverError", {
+        type: e.status,
+        message: e.message,
+      })
     }
   }
 
@@ -46,7 +41,7 @@ This function will receive the form data if form validation is successful.
 
 </Admonition>
 
-**Examples:**
+##### Examples:
 
 ---
 
@@ -54,8 +49,7 @@ This function will receive the form data if form validation is successful.
 
 <TabGroup buttonLabels={["TS", "JS"]}>
 
-```typescript copy sandbox="https://codesandbox.io/s/react-hook-form-handlesubmit-ts-v7-lcrtu"
-import React from "react"
+```tsx copy sandbox="https://codesandbox.io/s/react-hook-form-handlesubmit-ts-v7-lcrtu"
 import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form"
 
 type FormValues = {
@@ -67,10 +61,11 @@ type FormValues = {
 export default function App() {
   const { register, handleSubmit } = useForm<FormValues>()
   const onSubmit: SubmitHandler<FormValues> = (data) => console.log(data)
-  const onError: SubmitErrorHandler<FormValues> = (errors) => console.log(errors)
+  const onError: SubmitErrorHandler<FormValues> = (errors) =>
+    console.log(errors)
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit, onError)}>
       <input {...register("firstName")} />
       <input {...register("lastName")} />
       <input type="email" {...register("email")} />
@@ -104,32 +99,81 @@ export default function App() {
 **Async**
 
 ```javascript copy sandbox="https://codesandbox.io/s/react-hook-form-async-submit-validation-kpx0o"
-import React from "react";
-import { useForm } from "react-hook-form";
+import { useForm } from "react-hook-form"
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 function App() {
-  const { register, handleSubmit, formState: { errors } } = useForm();
-  const onSubmit = async data => {
-    await sleep(2000);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm()
+  const onSubmit = async (data) => {
+    await sleep(2000)
     if (data.username === "bill") {
-      alert(JSON.stringify(data));
+      alert(JSON.stringify(data))
     } else {
-      alert("There is an error");
+      alert("There is an error")
     }
-  };
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <label htmlFor="username">User Name</label>
-      <input placeholder="Bill" {...register("username"} />
+      <input placeholder="Bill" {...register("username")} />
 
       <input type="submit" />
     </form>
-  );
+  )
 }
 ```
+
+**Resolver with transformed values**
+
+When a resolver (Zod, Yup, Joi, or custom) transforms the submitted data — so the output type differs from the field input type — use `useForm`'s third generic, `TTransformedValues`, to tell TypeScript what `handleSubmit` will receive. Without it, the callback is typed as the input (field) type and you'll get errors accessing transformed properties.
+
+```tsx copy
+import { useForm, SubmitHandler } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+
+// Example using Zod — the same pattern applies to any resolver whose
+// output type differs from its input type (Yup, Joi, custom, etc.)
+const schema = z
+  .object({
+    emailOrPhone: z.string().trim(),
+  })
+  .transform(({ emailOrPhone }) => ({
+    isEmail: emailOrPhone.includes("@"),
+    isPhone: /^\d+$/.test(emailOrPhone),
+    value: emailOrPhone,
+  }))
+
+type FormInput = z.input<typeof schema> // { emailOrPhone: string }
+type FormOutput = z.output<typeof schema> // { isEmail: boolean; isPhone: boolean; value: string }
+
+export default function App() {
+  // 1st generic = field/input type (drives register, watch, etc.)
+  // 3rd generic = transformed output type (drives handleSubmit callback)
+  const { register, handleSubmit } = useForm<FormInput, unknown, FormOutput>({
+    resolver: zodResolver(schema),
+  })
+
+  const onSubmit: SubmitHandler<FormOutput> = (data) => {
+    console.log(data.isEmail, data.isPhone, data.value)
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register("emailOrPhone")} />
+      <input type="submit" />
+    </form>
+  )
+}
+```
+
+---
 
 ### Video
 
