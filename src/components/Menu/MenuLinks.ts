@@ -107,12 +107,18 @@ export const apiLinks: Pages = [
       { pathname: "/docs/useform/unregister", name: "unregister" },
       { pathname: "/docs/useform/formstate", name: "formState" },
       { pathname: "/docs/useform/watch", name: "watch" },
+      { pathname: "/docs/useform/subscribe", name: "subscribe" },
       { pathname: "/docs/useform/handlesubmit", name: "handleSubmit" },
       { pathname: "/docs/useform/reset", name: "reset" },
       { pathname: "/docs/useform/resetfield", name: "resetField" },
+      {
+        pathname: "/docs/useform/resetdefaultvalues",
+        name: "resetDefaultValues",
+      },
       { pathname: "/docs/useform/seterror", name: "setError" },
       { pathname: "/docs/useform/clearerrors", name: "clearErrors" },
       { pathname: "/docs/useform/setvalue", name: "setValue" },
+      { pathname: "/docs/useform/setvalues", name: "setValues" },
       { pathname: "/docs/useform/setfocus", name: "setFocus" },
       { pathname: "/docs/useform/getvalues", name: "getValues" },
       { pathname: "/docs/useform/getfieldstate", name: "getFieldState" },
@@ -144,6 +150,12 @@ export const apiLinks: Pages = [
   {
     pathname: "/docs/usewatch",
     name: "useWatch",
+    pages: [
+      {
+        pathname: "/docs/usewatch/watch",
+        name: "Watch",
+      },
+    ],
   },
   {
     pathname: "/docs/useformstate",
@@ -153,11 +165,25 @@ export const apiLinks: Pages = [
         pathname: "/docs/useformstate/errormessage",
         name: "ErrorMessage",
       },
+      {
+        pathname: "/docs/useformstate/formstatesubscribe",
+        name: "FormStateSubscribe",
+      },
     ],
   },
   {
     pathname: "/docs/usefieldarray",
     name: "useFieldArray",
+    pages: [
+      {
+        pathname: "/docs/usefieldarray/fieldarray",
+        name: "FieldArray",
+      },
+    ],
+  },
+  {
+    pathname: "/docs/uselens",
+    name: "useLens",
   },
   {
     pathname: "/docs/createFormControl",
@@ -175,6 +201,14 @@ export const tsLinks: Pages = [
     pathname: "#SubmitHandler",
   },
   {
+    name: "SubmitErrorHandler",
+    pathname: "#SubmitErrorHandler",
+  },
+  {
+    name: "FormSubmitHandler",
+    pathname: "#FormSubmitHandler",
+  },
+  {
     name: "Control",
     pathname: "#Control",
   },
@@ -187,12 +221,120 @@ export const tsLinks: Pages = [
     pathname: "#UseFormProps",
   },
   {
+    name: "UseFormRegister",
+    pathname: "#UseFormRegister",
+  },
+  {
+    name: "UseFormRegisterReturn",
+    pathname: "#UseFormRegisterReturn",
+  },
+  {
+    name: "UseFormUnregister",
+    pathname: "#UseFormUnregister",
+  },
+  {
+    name: "UseFormWatch",
+    pathname: "#UseFormWatch",
+  },
+  {
+    name: "UseFormSubscribe",
+    pathname: "#UseFormSubscribe",
+  },
+  {
+    name: "UseFormHandleSubmit",
+    pathname: "#UseFormHandleSubmit",
+  },
+  {
+    name: "UseFormReset",
+    pathname: "#UseFormReset",
+  },
+  {
+    name: "UseFormResetField",
+    pathname: "#UseFormResetField",
+  },
+  {
+    name: "UseFormResetDefaultValues",
+    pathname: "#UseFormResetDefaultValues",
+  },
+  {
+    name: "UseFormSetError",
+    pathname: "#UseFormSetError",
+  },
+  {
+    name: "UseFormClearErrors",
+    pathname: "#UseFormClearErrors",
+  },
+  {
+    name: "UseFormSetValue",
+    pathname: "#UseFormSetValue",
+  },
+  {
+    name: "UseFormSetValues",
+    pathname: "#UseFormSetValues",
+  },
+  {
+    name: "UseFormSetFocus",
+    pathname: "#UseFormSetFocus",
+  },
+  {
+    name: "UseFormGetValues",
+    pathname: "#UseFormGetValues",
+  },
+  {
+    name: "UseFormGetFieldState",
+    pathname: "#UseFormGetFieldState",
+  },
+  {
+    name: "UseFormTrigger",
+    pathname: "#UseFormTrigger",
+  },
+  {
+    name: "UseWatchProps",
+    pathname: "#UseWatchProps",
+  },
+  {
+    name: "WatchProps",
+    pathname: "#WatchProps",
+  },
+  {
+    name: "UseFormStateProps",
+    pathname: "#UseFormStateProps",
+  },
+  {
+    name: "FormStateSubscribeProps",
+    pathname: "#FormStateSubscribeProps",
+  },
+  {
+    name: "FormProviderProps",
+    pathname: "#FormProviderProps",
+  },
+  {
+    name: "FormProps",
+    pathname: "#FormProps",
+  },
+  {
     name: "UseFieldArrayReturn",
     pathname: "#UseFieldArrayReturn",
   },
   {
+    name: "FieldArrayMethodProps",
+    pathname: "#FieldArrayMethodProps",
+  },
+  {
     name: "UseFieldArrayProps",
     pathname: "#UseFieldArrayProps",
+  },
+  {
+    name: "FieldArrayProps",
+    pathname: "#FieldArrayProps",
+  },
+  {
+    name: "ControllerRenderProps",
+    pathname: "#ControllerRenderProps",
+  },
+  {
+    name: "ControllerFieldState",
+    pathname: "#ControllerFieldState",
   },
   {
     name: "UseControllerReturn",
@@ -203,12 +345,20 @@ export const tsLinks: Pages = [
     pathname: "#UseControllerProps",
   },
   {
+    name: "ControllerProps",
+    pathname: "#ControllerProps",
+  },
+  {
     name: "FieldError",
     pathname: "#FieldError",
   },
   {
     name: "FieldErrors",
     pathname: "#FieldErrors",
+  },
+  {
+    name: "ErrorOption",
+    pathname: "#ErrorOption",
   },
   {
     name: "Field",
@@ -239,12 +389,59 @@ export const tsLinks: Pages = [
     pathname: "#RegisterOptions",
   },
   {
+    name: "FormState",
+    pathname: "#FormState",
+  },
+  {
+    name: "KeepStateOptions",
+    pathname: "#KeepStateOptions",
+  },
+  {
     name: "FormStateProxy",
     pathname: "#FormStateProxy",
   },
   {
     name: "NestedValue",
     pathname: "#NestedValue",
+  },
+]
+
+export const migrateV7ToV8Links: Pages = [
+  {
+    name: "Installation",
+    pathname: "#Installation",
+  },
+  {
+    name: "React Compiler",
+    pathname: "#ReactCompiler",
+  },
+  {
+    name: "Flat Field Array",
+    pathname: "#FlatFieldArray",
+  },
+  {
+    name: "Breaking Changes",
+    pathname: "#BreakingChanges",
+  },
+  {
+    name: "Input Ref",
+    pathname: "#InputRef",
+  },
+  {
+    name: "useFieldArray",
+    pathname: "#useFieldArray",
+  },
+  {
+    name: "Watch Component",
+    pathname: "#WatchComponent",
+  },
+  {
+    name: "watch Callback",
+    pathname: "#watchCallback",
+  },
+  {
+    name: "setValue",
+    pathname: "#setValue",
   },
 ]
 
