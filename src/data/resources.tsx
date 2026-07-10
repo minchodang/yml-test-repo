@@ -535,6 +535,26 @@ export default {
   video: [
     {
       type: "video",
+      title: "React Hook Form - Build a Modern Form (with Zod & Server Errors)",
+      url: "https://www.youtube.com/watch?v=u6PQ5xZAv7Q",
+      authorUrl: "",
+      author: "",
+      description:
+        "A highly-rated walkthrough of building a production-ready form with React Hook Form, covering schema validation with Zod, TypeScript integration, and realistic server-side error handling.",
+      version: "7",
+    },
+    {
+      type: "video",
+      title: "React Hook Form - The Free Course",
+      url: "https://youtu.be/lp8xXoG0xQY",
+      authorUrl: "https://www.youtube.com/@codaffection",
+      author: "CodAffection",
+      description:
+        "Learn A - Z about React Hook Form library with a practical project build, An in-depth course covering the fundamentals of the library",
+      version: "7",
+    },
+    {
+      type: "video",
       title:
         "Working with Forms in React (React Hook Form, Zod & Component Libraries)",
       url: "https://www.youtube.com/playlist?list=PLeO8M-2wYaaV5vh2lRWV7qt_-Io8agaf-",
@@ -1014,6 +1034,13 @@ export default {
       title: "React Hook Form Jsonschema",
       description:
         "Small project based on react-hook-form that exposes an API for easily creating customizable forms based on a JSON Schema with built-in validation.",
+    },
+    {
+      type: "binding",
+      url: "https://git.gay/singingwolfboy/react-hook-form-file-upload",
+      title: "File Uploads for React Hook Form",
+      description:
+        "Simplify file uploads by allowing the client to upload files directly to your object store. Let React Hook Form manage file references, instead of the files themselves.",
     },
   ],
 }
