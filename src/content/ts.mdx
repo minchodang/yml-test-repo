@@ -4,12 +4,13 @@ description: List of exported Typescript Types.
 sidebar: tsLinks
 ---
 
+<TsSelectNav />
+
 **Important:** Typescript ^4.3 above is the recommended version to work with react hook form.
 
 ## \</> Resolver {#Resolver}
 
-```typescript copy sandbox="https://codesandbox.io/s/react-hook-form-resolver-forked-mjsx7"
-import React from "react"
+```tsx copy sandbox="https://codesandbox.io/s/react-hook-form-resolver-forked-mjsx7"
 import { useForm, Resolver } from "react-hook-form"
 
 type FormValues = {
@@ -56,8 +57,7 @@ export default function App() {
 
 ## \</> SubmitHandler {#SubmitHandler}
 
-```typescript copy sandbox="https://codesandbox.io/s/react-hook-form-handlesubmit-ts-v7-z9z0g"
-import React from "react"
+```tsx copy sandbox="https://codesandbox.io/s/react-hook-form-handlesubmit-ts-v7-z9z0g"
 import { useForm, SubmitHandler } from "react-hook-form"
 
 type FormValues = {
@@ -86,8 +86,7 @@ export default function App() {
 
 ## \</> SubmitErrorHandler {#SubmitErrorHandler}
 
-```typescript copy
-import React from "react"
+```tsx copy
 import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form"
 
 type FormValues = {
@@ -99,12 +98,13 @@ type FormValues = {
 export default function App() {
   const { register, handleSubmit } = useForm<FormValues>()
   const onSubmit: SubmitHandler<FormValues> = (data) => console.log(data)
-  const onError: SubmitErrorHandler<FormValues> = (errors) => console.log(errors);
+  const onError: SubmitErrorHandler<FormValues> = (errors) =>
+    console.log(errors)
 
   return (
     <form onSubmit={handleSubmit(onSubmit, onError)}>
-      <input {...register("firstName"), { required: true }} />
-      <input {...register("lastName"), { minLength: 2 }} />
+      <input {...register("firstName", { required: true })} />
+      <input {...register("lastName", { minLength: 2 })} />
       <input type="email" {...register("email")} />
 
       <input type="submit" />
@@ -115,9 +115,25 @@ export default function App() {
 
 ---
 
+## \</> FormSubmitHandler {#FormSubmitHandler}
+
+The type for the [`Form`](/docs/useform/form) component's `onSubmit` prop — unlike `SubmitHandler`, the payload includes the raw `FormData` and `formDataJson` from the submission.
+
+```tsx copy
+export type FormSubmitHandler<TTransformedValues> = (payload: {
+  data: TTransformedValues
+  event?: React.BaseSyntheticEvent
+  formData: FormData
+  formDataJson: string
+  method?: "post" | "put" | "delete"
+}) => unknown | Promise<unknown>
+```
+
+---
+
 ## \</> Control {#Control}
 
-```typescript copy sandbox="https://codesandbox.io/s/control-2mg07"
+```tsx copy sandbox="https://codesandbox.io/s/control-2mg07"
 import { useForm, useWatch, Control } from "react-hook-form"
 
 type FormValues = {
@@ -157,11 +173,11 @@ export default function App() {
 
 <TabGroup buttonLabels={["Type", "Code Example"]}>
 
-```typescript copy
+```tsx copy
 export type UseFormReturn<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
-  TTransformedValues extends FieldValues | undefined = undefined,
+  TTransformedValues = TFieldValues,
 > = {
   watch: UseFormWatch<TFieldValues>
   getValues: UseFormGetValues<TFieldValues>
@@ -169,21 +185,23 @@ export type UseFormReturn<
   setError: UseFormSetError<TFieldValues>
   clearErrors: UseFormClearErrors<TFieldValues>
   setValue: UseFormSetValue<TFieldValues>
+  setValues: UseFormSetValues<TFieldValues>
   trigger: UseFormTrigger<TFieldValues>
   formState: FormState<TFieldValues>
   resetField: UseFormResetField<TFieldValues>
   reset: UseFormReset<TFieldValues>
-  handleSubmit: UseFormHandleSubmit<TFieldValues>
+  resetDefaultValues: UseFormResetDefaultValues<TFieldValues>
+  handleSubmit: UseFormHandleSubmit<TFieldValues, TTransformedValues>
   unregister: UseFormUnregister<TFieldValues>
-  control: Control<TFieldValues, TContext>
+  control: Control<TFieldValues, TContext, TTransformedValues>
   register: UseFormRegister<TFieldValues>
   setFocus: UseFormSetFocus<TFieldValues>
+  subscribe: UseFormSubscribe<TFieldValues>
 }
 ```
 
-```typescript copy sandbox="https://codesandbox.io/s/react-hook-form-UseFormReturn-forked-yl40u"
+```tsx copy sandbox="https://codesandbox.io/s/react-hook-form-UseFormReturn-forked-yl40u"
 import type { FieldValues, UseFormReturn, SubmitHandler } from "react-hook-form"
-import React from "react"
 import { useForm } from "react-hook-form"
 
 type InputProps = React.DetailedHTMLProps<
@@ -267,11 +285,11 @@ export default function App() {
 
 ## \</> UseFormProps {#UseFormProps}
 
-```typescript copy
+```tsx copy
 export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
-  TContext extends object = object,
-  TTransformedValues extends FieldValues | undefined = undefined,
+  TContext = any,
+  TTransformedValues = TFieldValues,
 > = Partial<{
   mode: Mode
   disabled: boolean
@@ -280,7 +298,7 @@ export type UseFormProps<
   values: TFieldValues
   errors: FieldErrors<TFieldValues>
   resetOptions: Parameters<UseFormReset<TFieldValues>>[1]
-  resolver: Resolver<TFieldValues, TContext>
+  resolver: Resolver<TFieldValues, TContext, TTransformedValues>
   context: TContext
   shouldFocusError: boolean
   shouldUnregister: boolean
@@ -288,14 +306,471 @@ export type UseFormProps<
   progressive: boolean
   criteriaMode: CriteriaMode
   delayError: number
+  formControl?: Omit<
+    UseFormReturn<TFieldValues, TContext, TTransformedValues>,
+    "formState"
+  >
+  validate: ValidateForm<TFieldValues>
 }>
+```
+
+---
+
+## \</> UseFormRegister {#UseFormRegister}
+
+The type of [`register`](/docs/useform/register).
+
+```tsx copy
+export type UseFormRegister<TFieldValues extends FieldValues> = <
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>(
+  name: TFieldName,
+  options?: RegisterOptions<TFieldValues, TFieldName>
+) => UseFormRegisterReturn<TFieldName>
+```
+
+---
+
+## \</> UseFormRegisterReturn {#UseFormRegisterReturn}
+
+The shape returned by invoking [`register`](/docs/useform/register). Useful for typing a custom `Input` component that spreads `{...register(name)}`.
+
+```tsx copy
+export type UseFormRegisterReturn<
+  TFieldName extends InternalFieldName = InternalFieldName,
+> = {
+  onChange: ChangeHandler
+  onBlur: ChangeHandler
+  ref: RefCallBack
+  name: TFieldName
+  min?: string | number
+  max?: string | number
+  maxLength?: number
+  minLength?: number
+  pattern?: string
+  required?: boolean
+  disabled?: boolean
+}
+```
+
+---
+
+## \</> UseFormUnregister {#UseFormUnregister}
+
+The type of [`unregister`](/docs/useform/unregister).
+
+```tsx copy
+export type UseFormUnregister<TFieldValues extends FieldValues> = (
+  name?:
+    | FieldPath<TFieldValues>
+    | FieldPath<TFieldValues>[]
+    | readonly FieldPath<TFieldValues>[],
+  options?: Omit<
+    KeepStateOptions,
+    | "keepIsSubmitted"
+    | "keepSubmitCount"
+    | "keepValues"
+    | "keepDefaultValues"
+    | "keepErrors"
+  > & { keepValue?: boolean; keepDefaultValue?: boolean; keepError?: boolean }
+) => void
+```
+
+---
+
+## \</> UseFormWatch {#UseFormWatch}
+
+The type of [`watch`](/docs/useform/watch). Overloaded — called with no argument, a single field name, an array of field names, or a callback for subscribing without triggering a re-render.
+
+```tsx copy
+export type UseFormWatch<TFieldValues extends FieldValues> = {
+  (): TFieldValues
+  <TFieldNames extends readonly FieldPath<TFieldValues>[]>(
+    names: readonly [...TFieldNames],
+    defaultValue?: DeepPartial<TFieldValues>
+  ): FieldPathValues<TFieldValues, TFieldNames>
+  <TFieldName extends FieldPath<TFieldValues>>(
+    name: TFieldName,
+    defaultValue?: FieldPathValue<TFieldValues, TFieldName>
+  ): FieldPathValue<TFieldValues, TFieldName>
+  (
+    callback: WatchObserver<TFieldValues>,
+    defaultValues?: DeepPartial<TFieldValues>
+  ): Subscription
+}
+```
+
+---
+
+## \</> UseFormSubscribe {#UseFormSubscribe}
+
+The type of [`subscribe`](/docs/useform/subscribe) — subscribe to formState changes without triggering a component re-render.
+
+```tsx copy
+export type UseFormSubscribe<TFieldValues extends FieldValues> = <
+  TFieldNames extends readonly FieldPath<TFieldValues>[],
+>(payload: {
+  name?: readonly [...TFieldNames] | TFieldNames[number]
+  formState?: Partial<ReadFormState>
+  callback: (
+    data: Partial<FormState<TFieldValues>> & {
+      values: TFieldValues
+      name?: InternalFieldName
+      type?: EventType
+    }
+  ) => void
+  exact?: boolean
+}) => () => void
+```
+
+---
+
+## \</> UseFormHandleSubmit {#UseFormHandleSubmit}
+
+The type of [`handleSubmit`](/docs/useform/handlesubmit).
+
+```tsx copy
+export type UseFormHandleSubmit<
+  TFieldValues extends FieldValues,
+  TTransformedValues = TFieldValues,
+> = (
+  onValid: SubmitHandler<TTransformedValues>,
+  onInvalid?: SubmitErrorHandler<TFieldValues>
+) => (e?: React.BaseSyntheticEvent) => Promise<void>
+```
+
+---
+
+## \</> UseFormReset {#UseFormReset}
+
+The type of [`reset`](/docs/useform/reset).
+
+```tsx copy
+export type UseFormReset<TFieldValues extends FieldValues> = (
+  values?:
+    | DefaultValues<TFieldValues>
+    | TFieldValues
+    | ResetAction<TFieldValues>,
+  keepStateOptions?: KeepStateOptions
+) => void
+```
+
+---
+
+## \</> UseFormResetField {#UseFormResetField}
+
+The type of [`resetField`](/docs/useform/resetfield).
+
+```tsx copy
+export type UseFormResetField<TFieldValues extends FieldValues> = <
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>(
+  name: TFieldName,
+  options?: ResetFieldConfig<TFieldValues, TFieldName>
+) => void
+```
+
+---
+
+## \</> UseFormResetDefaultValues {#UseFormResetDefaultValues}
+
+The type of [`resetDefaultValues`](/docs/useform/resetdefaultvalues).
+
+```tsx copy
+export type UseFormResetDefaultValues<TFieldValues extends FieldValues> = (
+  values: DefaultValues<TFieldValues> | TFieldValues,
+  options?: Partial<Pick<KeepStateOptions, "keepDirty" | "keepIsValid">>
+) => void
+```
+
+---
+
+## \</> UseFormSetError {#UseFormSetError}
+
+The type of [`setError`](/docs/useform/seterror).
+
+```tsx copy
+export type UseFormSetError<TFieldValues extends FieldValues> = (
+  name:
+    | FieldPath<TFieldValues>
+    | `root.${string}`
+    | "root"
+    | "form"
+    | `form.${string}`,
+  error: ErrorOption,
+  options?: {
+    shouldFocus: boolean
+  }
+) => void
+```
+
+---
+
+## \</> UseFormClearErrors {#UseFormClearErrors}
+
+The type of [`clearErrors`](/docs/useform/clearerrors).
+
+```tsx copy
+export type UseFormClearErrors<TFieldValues extends FieldValues> = (
+  name?:
+    | FieldPath<TFieldValues>
+    | FieldPath<TFieldValues>[]
+    | readonly FieldPath<TFieldValues>[]
+    | `root.${string}`
+    | "root"
+    | "form"
+    | `form.${string}`
+) => void
+```
+
+---
+
+## \</> UseFormSetValue {#UseFormSetValue}
+
+The type of [`setValue`](/docs/useform/setvalue).
+
+```tsx copy
+export type UseFormSetValue<TFieldValues extends FieldValues> = <
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>(
+  name: TFieldName,
+  value: FieldPathValue<TFieldValues, TFieldName>,
+  options?: SetValueConfig
+) => void
+```
+
+---
+
+## \</> UseFormSetValues {#UseFormSetValues}
+
+The type of [`setValues`](/docs/useform/setvalues).
+
+```tsx copy
+export type UseFormSetValues<TFieldValues extends FieldValues> = (
+  value: Partial<TFieldValues> | ((formValues: TFieldValues) => TFieldValues),
+  options?: SetValueConfig
+) => void
+```
+
+---
+
+## \</> UseFormSetFocus {#UseFormSetFocus}
+
+The type of [`setFocus`](/docs/useform/setfocus).
+
+```tsx copy
+export type SetFocusOptions = Partial<{
+  shouldSelect: boolean
+}>
+
+export type UseFormSetFocus<TFieldValues extends FieldValues> = <
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>(
+  name: TFieldName,
+  options?: SetFocusOptions
+) => void
+```
+
+---
+
+## \</> UseFormGetValues {#UseFormGetValues}
+
+The type of [`getValues`](/docs/useform/getvalues). Overloaded — called with no argument, a single field name, or an array of field names.
+
+```tsx copy
+export type GetValuesConfig = {
+  dirtyFields?: boolean
+  touchedFields?: boolean
+}
+
+export type UseFormGetValues<TFieldValues extends FieldValues> = {
+  (name?: undefined, config?: GetValuesConfig): TFieldValues
+  <TFieldName extends FieldPath<TFieldValues>>(
+    name: TFieldName,
+    config?: GetValuesConfig
+  ): FieldPathValue<TFieldValues, TFieldName>
+  <TFieldNames extends FieldPath<TFieldValues>[]>(
+    names: readonly [...TFieldNames],
+    config?: GetValuesConfig
+  ): [...FieldPathValues<TFieldValues, TFieldNames>]
+}
+```
+
+---
+
+## \</> UseFormGetFieldState {#UseFormGetFieldState}
+
+The type of [`getFieldState`](/docs/useform/getfieldstate).
+
+```tsx copy
+export type UseFormGetFieldState<TFieldValues extends FieldValues> = <
+  TFieldName extends FieldPath<TFieldValues>,
+>(
+  name: TFieldName,
+  formState?: FormState<TFieldValues>
+) => {
+  invalid: boolean
+  isDirty: boolean
+  isTouched: boolean
+  isValidating: boolean
+  error?: FieldError
+}
+```
+
+---
+
+## \</> UseFormTrigger {#UseFormTrigger}
+
+The type of [`trigger`](/docs/useform/trigger).
+
+```tsx copy
+export type TriggerConfig = Partial<{
+  shouldFocus: boolean
+}>
+
+export type UseFormTrigger<TFieldValues extends FieldValues> = (
+  name?:
+    | FieldPath<TFieldValues>
+    | FieldPath<TFieldValues>[]
+    | readonly FieldPath<TFieldValues>[],
+  options?: TriggerConfig
+) => Promise<boolean>
+```
+
+---
+
+## \</> UseWatchProps {#UseWatchProps}
+
+The props accepted by [`useWatch`](/docs/usewatch).
+
+```tsx copy
+export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
+  defaultValue?: unknown
+  disabled?: boolean
+  name?:
+    | FieldPath<TFieldValues>
+    | FieldPath<TFieldValues>[]
+    | readonly FieldPath<TFieldValues>[]
+  control?: Control<TFieldValues>
+  exact?: boolean
+  compute?: (formValues: TFieldValues) => TFieldValues
+}
+```
+
+---
+
+## \</> WatchProps {#WatchProps}
+
+The props for the [`Watch`](/docs/usewatch/watch) render-prop component.
+
+```tsx copy
+export type WatchProps<
+  TFieldName extends WatchName<TFieldValues>,
+  TFieldValues extends FieldValues = FieldValues,
+  TContext = any,
+  TTransformedValues = TFieldValues,
+  TComputeValue = undefined,
+> = {
+  control?: Control<TFieldValues, TContext, TTransformedValues>
+  name?: TFieldName
+  disabled?: boolean
+  exact?: boolean
+  defaultValue?: WatchDefaultValue<TFieldName, TFieldValues>
+  compute?: (value: WatchValue<TFieldName, TFieldValues>) => TComputeValue
+  render: (
+    value: WatchRenderValue<TFieldName, TFieldValues, TComputeValue>
+  ) => React.ReactNode | React.ReactNode[]
+}
+```
+
+---
+
+## \</> UseFormStateProps {#UseFormStateProps}
+
+The props accepted by [`useFormState`](/docs/useformstate).
+
+```tsx copy
+export type UseFormStateProps<
+  TFieldValues extends FieldValues,
+  TTransformedValues = TFieldValues,
+> = Partial<{
+  control?: Control<TFieldValues, any, TTransformedValues>
+  disabled?: boolean
+  name?:
+    | FieldPath<TFieldValues>
+    | FieldPath<TFieldValues>[]
+    | readonly FieldPath<TFieldValues>[]
+  exact?: boolean
+}>
+```
+
+---
+
+## \</> FormStateSubscribeProps {#FormStateSubscribeProps}
+
+The props for the [`FormStateSubscribe`](/docs/useformstate/formstatesubscribe) render-prop component.
+
+```tsx copy
+export type FormStateSubscribeProps<
+  TFieldValues extends FieldValues,
+  TTransformedValues = TFieldValues,
+> = UseFormStateProps<TFieldValues, TTransformedValues> & {
+  render: (values: UseFormStateReturn<TFieldValues>) => React.ReactNode
+}
+```
+
+---
+
+## \</> FormProviderProps {#FormProviderProps}
+
+```tsx copy
+export type FormProviderProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TContext = any,
+  TTransformedValues = TFieldValues,
+> = {
+  children: React.ReactNode | React.ReactNode[]
+} & UseFormReturn<TFieldValues, TContext, TTransformedValues>
+```
+
+---
+
+## \</> FormProps {#FormProps}
+
+```tsx copy
+export type FormProps<
+  TFieldValues extends FieldValues,
+  TTransformedValues = TFieldValues,
+> = Omit<React.FormHTMLAttributes<HTMLFormElement>, "onError" | "onSubmit"> &
+  Partial<{
+    control: Control<TFieldValues, any, TTransformedValues>
+    headers: Record<string, string>
+    validateStatus: (status: number) => boolean
+    onError: (
+      payload:
+        | { response: Response; error?: undefined }
+        | { response?: undefined; error: unknown }
+    ) => void
+    onSuccess: ({ response }: { response: Response }) => void
+    onSubmit: FormSubmitHandler<TTransformedValues>
+    method: "post" | "put" | "delete"
+    children: React.ReactNode | React.ReactNode[]
+    render: (props: {
+      submit: (e?: React.FormEvent) => void
+    }) => React.ReactNode | React.ReactNode[]
+    encType:
+      | "application/x-www-form-urlencoded"
+      | "multipart/form-data"
+      | "text/plain"
+      | "application/json"
+  }>
 ```
 
 ---
 
 ## \</> UseFieldArrayReturn {#UseFieldArrayReturn}
 
-```typescript copy
+```tsx copy
 export type UseFieldArrayReturn<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends
@@ -310,7 +785,23 @@ export type UseFieldArrayReturn<
   insert: UseFieldArrayInsert<TFieldValues, TFieldArrayName>
   update: UseFieldArrayUpdate<TFieldValues, TFieldArrayName>
   replace: UseFieldArrayReplace<TFieldValues, TFieldArrayName>
-  fields: FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>[]
+  fields: (FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName> & {
+    disabled?: boolean
+  })[]
+}
+```
+
+---
+
+## \</> FieldArrayMethodProps {#FieldArrayMethodProps}
+
+Focus options accepted as the second argument to `append`, `prepend`, and `insert`.
+
+```tsx copy
+export type FieldArrayMethodProps = {
+  shouldFocus?: boolean
+  focusIndex?: number
+  focusName?: string
 }
 ```
 
@@ -318,15 +809,16 @@ export type UseFieldArrayReturn<
 
 ## \</> UseFieldArrayProps {#UseFieldArrayProps}
 
-```typescript copy
+```tsx copy
 export type UseFieldArrayProps<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
+  TTransformedValues = TFieldValues,
 > = {
   name: TFieldArrayName
   keyName?: TKeyName
-  control?: Control<TFieldValues>
+  control?: Control<TFieldValues, any, TTransformedValues>
   rules?: {
     validate?
       | Validate<FieldArray<TFieldValues, TFieldArrayName>[], TFieldValues>
@@ -339,6 +831,60 @@ export type UseFieldArrayProps<
     'maxLength' | 'minLength' | 'required'
   >
   shouldUnregister?: boolean
+  disabled?: boolean
+}
+```
+
+---
+
+## \</> FieldArrayProps {#FieldArrayProps}
+
+```tsx copy
+export type FieldArrayProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldArrayName extends
+    FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
+  TKeyName extends string = "id",
+> = {
+  render: (
+    fieldArray: UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName>
+  ) => React.ReactElement
+} & UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>
+```
+
+---
+
+## \</> ControllerRenderProps {#ControllerRenderProps}
+
+The shape of the `field` object passed to `Controller`'s `render` prop. Useful for typing a custom controlled input component.
+
+```tsx copy
+export type ControllerRenderProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = {
+  onChange: (...event: any[]) => void
+  onBlur: Noop
+  value: FieldPathValue<TFieldValues, TName>
+  disabled?: boolean
+  name: TName
+  ref: RefCallBack
+}
+```
+
+---
+
+## \</> ControllerFieldState {#ControllerFieldState}
+
+The shape of the `fieldState` object passed to `Controller`'s `render` prop.
+
+```tsx copy
+export type ControllerFieldState = {
+  invalid: boolean
+  isTouched: boolean
+  isDirty: boolean
+  isValidating: boolean
+  error?: FieldError
 }
 ```
 
@@ -346,7 +892,7 @@ export type UseFieldArrayProps<
 
 ## \</> UseControllerReturn {#UseControllerReturn}
 
-```typescript copy
+```tsx copy
 export type UseControllerReturn<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -361,10 +907,11 @@ export type UseControllerReturn<
 
 ## \</> UseControllerProps {#UseControllerProps}
 
-```typescript copy
+```tsx copy
 export type UseControllerProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TTransformedValues = TFieldValues,
 > = {
   name: TName
   rules?: Omit<
@@ -373,16 +920,39 @@ export type UseControllerProps<
   >
   shouldUnregister?: boolean
   defaultValue?: FieldPathValue<TFieldValues, TName>
-  control?: Control<TFieldValues>
+  control?: Control<TFieldValues, any, TTransformedValues>
   disabled?: boolean
+  exact?: boolean
 }
+```
+
+---
+
+## \</> ControllerProps {#ControllerProps}
+
+```tsx copy
+export type ControllerProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TTransformedValues = TFieldValues,
+> = {
+  render: ({
+    field,
+    fieldState,
+    formState,
+  }: {
+    field: ControllerRenderProps<TFieldValues, TName>
+    fieldState: ControllerFieldState
+    formState: UseFormStateReturn<TFieldValues>
+  }) => React.ReactElement
+} & UseControllerProps<TFieldValues, TName, TTransformedValues>
 ```
 
 ---
 
 ## \</> FieldError {#FieldError}
 
-```typescript copy
+```tsx copy
 export type FieldError = {
   type: LiteralUnion<keyof RegisterOptions, string>
   root?: FieldError
@@ -396,13 +966,28 @@ export type FieldError = {
 
 ## \</> FieldErrors {#FieldErrors}
 
-```typescript copy
+```tsx copy
 export type FieldErrors<T extends FieldValues = FieldValues> = Partial<
   FieldValues extends IsAny<FieldValues>
     ? any
     : FieldErrorsImpl<DeepRequired<T>>
 > & {
   root?: Record<string, GlobalError> & GlobalError
+  form?: GlobalError
+}
+```
+
+---
+
+## \</> ErrorOption {#ErrorOption}
+
+The error object accepted by [`setError`](/docs/useform/seterror).
+
+```tsx copy
+export type ErrorOption = {
+  message?: Message
+  type?: LiteralUnion<keyof RegisterOptions, string>
+  types?: MultipleFieldErrors
 }
 ```
 
@@ -410,7 +995,7 @@ export type FieldErrors<T extends FieldValues = FieldValues> = Partial<
 
 ## \</> Field {#Field}
 
-```typescript copy
+```tsx copy
 export type Field = {
   _f: {
     ref: Ref
@@ -427,7 +1012,7 @@ export type Field = {
 
 This type is useful when you define custom component's `name` prop, and it will type check against your field path.
 
-```typescript copy
+```tsx copy
 export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>
 ```
 
@@ -437,7 +1022,7 @@ export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>
 
 This type will return union with all available paths that match the passed value
 
-```typescript copy
+```tsx copy
 export type FieldPathByValue<TFieldValues extends FieldValues, TValue> = {
   [Key in FieldPath<TFieldValues>]: FieldPathValue<
     TFieldValues,
@@ -452,7 +1037,7 @@ export type FieldPathByValue<TFieldValues extends FieldValues, TValue> = {
 
 ## \</> FieldValues {#FieldValues}
 
-```typescript copy
+```tsx copy
 export type FieldValues = Record<string, any>
 ```
 
@@ -460,7 +1045,7 @@ export type FieldValues = Record<string, any>
 
 ## \</> FieldArrayWithId {#FieldArrayWithId}
 
-```typescript copy
+```tsx copy
 export type FieldArrayWithId<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends
@@ -473,7 +1058,7 @@ export type FieldArrayWithId<
 
 ## \</> Mode {#Mode}
 
-```typescript copy
+```tsx copy
 export type ValidationMode = typeof VALIDATION_MODE
 
 export type Mode = keyof ValidationMode
@@ -483,7 +1068,7 @@ export type Mode = keyof ValidationMode
 
 ## \</> RegisterOptions {#RegisterOptions}
 
-```typescript copy
+```tsx copy
 export type RegisterOptions<
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -528,9 +1113,58 @@ export type RegisterOptions<
 
 ---
 
+## \</> FormState {#FormState}
+
+The type of [`formState`](/docs/useform/formstate), returned by `useForm` and `useFormState`.
+
+```tsx copy
+export type FormState<TFieldValues extends FieldValues> = {
+  isDirty: boolean
+  isLoading: boolean
+  isSubmitted: boolean
+  isSubmitSuccessful: boolean
+  isSubmitting: boolean
+  isValidating: boolean
+  isValid: boolean
+  disabled: boolean
+  submitCount: number
+  defaultValues?: undefined | Readonly<DeepPartial<TFieldValues>>
+  dirtyFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>
+  touchedFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>
+  validatingFields: Partial<Readonly<FieldNamesMarkedBoolean<TFieldValues>>>
+  errors: FieldErrors<TFieldValues>
+  isReady: boolean
+}
+```
+
+---
+
+## \</> KeepStateOptions {#KeepStateOptions}
+
+Options accepted by [`reset`](/docs/useform/reset) and `useForm`'s [`resetOptions`](/docs/useform#resetOptions), controlling which parts of form state survive the reset.
+
+```tsx copy
+export type KeepStateOptions = Partial<{
+  keepDirtyValues: boolean
+  keepErrors: boolean
+  keepDirty: boolean
+  keepValues: boolean
+  keepDefaultValues: boolean
+  keepIsSubmitted: boolean
+  keepIsSubmitSuccessful: boolean
+  keepTouched: boolean
+  keepIsValidating: boolean
+  keepIsValid: boolean
+  keepSubmitCount: boolean
+  keepFieldsRef: boolean
+}>
+```
+
+---
+
 ## \</> FormStateProxy {#FormStateProxy}
 
-```typescript copy
+```tsx copy
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isDirty: boolean
   isValidating: boolean
@@ -548,10 +1182,9 @@ export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
 
 <TabGroup buttonLabels={["Code Example", "Type"]}>
 
-```typescript copy sandbox="https://codesandbox.io/s/react-hook-form-nestedvalue-lskdv"
-import React from "react"
+```tsx copy sandbox="https://codesandbox.io/s/react-hook-form-nestedvalue-lskdv"
 import { useForm, NestedValue } from "react-hook-form"
-import { Autocomplete, TextField, Select } from "@material-ui/core"
+import { TextField, Select } from "@material-ui/core"
 import { Autocomplete } from "@material-ui/lab"
 
 type Option = {
@@ -606,7 +1239,7 @@ export default function App() {
 
       <Select
         value=""
-        onChange={(e) => setValue("muiSelect", e.target.value as number[])}
+        onChange={(e) => setValue("select", e.target.value as number[])}
       >
         <MenuItem value={10}>Ten</MenuItem>
         <MenuItem value={20}>Twenty</MenuItem>
@@ -618,7 +1251,7 @@ export default function App() {
 }
 ```
 
-```typescript copy
+```tsx copy
 import { useForm, NestedValue } from "react-hook-form"
 
 type FormValues = {
