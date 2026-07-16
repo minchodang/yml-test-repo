@@ -7,46 +7,23 @@ export function SponsorsList() {
 
       <div className={styles.logoGroup}>
         <a
-          href="https://www.casinoreviews.net/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="/images/casinoreviews.png" alt="Casino Reviews" />
-        </a>
-        <a
-          href="https://www.beekai.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img
-            src="https://www.beekai.com/marketing/logo/horizontal.svg"
-            alt="BEEKAI Form builder"
-          />
-        </a>
-        <a
-          href="https://www.route4me.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="/images/route4me.png" alt="route4me" />
-        </a>
-        <a href="https://twicsy.com/" target="_blank" rel="noopener noreferrer">
-          <img
-            className={styles.twicsy}
-            src="/images/twicsy.png"
-            alt="twicsy"
-          />
-        </a>
-        <a
-          href="https://www.sanity.io//"
+          href="https://www.follower24.de/"
           target="_blank"
           rel="noopener noreferrer"
         >
           <img
             className={styles.twicsy}
-            src="/images/sanity.png"
-            alt="sanity io"
+            src="https://camo.githubusercontent.com/18448c6df47adb0b54376469641667a63005b6cc9bc402d9475a42e06b525c2f/68747470733a2f2f696d616765732e6f70656e636f6c6c6563746976652e636f6d2f666f6c6c6f77657232342f303032393766382f6176617461722f3235362e706e673f6865696768743d323536"
+            alt="follower24"
           />
+        </a>
+        <a
+          href="https://opencollective.com/react-hook-form"
+          target="_blank"
+          className={styles.add}
+          rel="noopener noreferrer"
+        >
+          + Sponsor
         </a>
       </div>
     </div>
