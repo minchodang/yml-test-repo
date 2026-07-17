@@ -19,8 +19,15 @@ import styles from "./HomePage.module.css"
 import { SponsorsList } from "./sponsorsList"
 import { useRouter } from "next/router"
 import { GeneralObserver } from "./general-observer"
+import FlipNumbers from "react-flip-numbers"
 
-function HomePage() {
+function formatDownloads(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(0)}M+`
+  if (n >= 1_000) return `${(n / 1_000).toFixed(0)}K+`
+  return n.toLocaleString()
+}
+
+function HomePage({ monthlyDownloads = 0 }: { monthlyDownloads?: number }) {
   const [submitData, updateSubmitData] = useState({})
   const [showBuilder, toggleBuilder] = useState(false)
   const HomeRef = useRef<HTMLDivElement>(null)
@@ -30,6 +37,7 @@ function HomePage() {
   const [isolatePlay, setIsolatePlay] = useState(false)
   // const [isCardPlay, setCardPlay] = useState(false)
   const [renderPlay, setRenderPlay] = useState(false)
+  const [renderCounter, setCounterPlay] = useState(false)
   const [formUpdated, setFormUpdated] = useState(false)
   const [watchPlay, setWatchPlay] = useState(false)
   const { query } = useRouter()
@@ -101,8 +109,55 @@ function HomePage() {
         <CodePerfCompareSection isPlayRender={renderPlay} />
       </GeneralObserver>
 
+      {monthlyDownloads > 0 && (
+        <GeneralObserver
+          onEnter={() => {
+            setCounterPlay(true)
+          }}
+        >
+          <div className={containerStyles.centerContent}>
+            <section className={styles.downloadStats}>
+              <h2 className={typographyStyles.h1}>Strong Adoption</h2>
+              <p className={typographyStyles.homeParagraph}>
+                One of the most downloaded React form libraries, trusted by
+                developers and enterprises worldwide.
+              </p>
+              <div className={styles.downloadCount}>
+                <FlipNumbers
+                  play={renderCounter}
+                  numbers={formatDownloads(monthlyDownloads)}
+                  height={100}
+                  width={63}
+                  color="#ec5990"
+                  perspective={1500}
+                  duration={4}
+                  numberStyle={{ fontWeight: 800 }}
+                  nonNumberStyle={{
+                    fontSize: 100,
+                    fontWeight: 900,
+                    color: "#ec5990",
+                    lineHeight: "100px",
+                    verticalAlign: "bottom",
+                  }}
+                />
+              </div>
+              <p className={styles.downloadSub}>
+                Monthly{" "}
+                <a
+                  href="https://www.npmjs.com/package/react-hook-form"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  npm downloads
+                </a>
+              </p>
+            </section>
+          </div>
+        </GeneralObserver>
+      )}
+
       <div className={containerStyles.centerContent}>
-        <h1 className={typographyStyles.h1}>Highlights</h1>
+        <h2 className={typographyStyles.h1}>Highlights</h2>
 
         <p className={typographyStyles.homeParagraph}>
           This project is getting recognized by the community and industry. It's
@@ -170,15 +225,22 @@ function HomePage() {
             <h3>Technology Radar</h3>
 
             <p>
-              The project is fortunate enough to be under the radar for the
-              Languages & Frameworks section.
+              Featured in the{" "}
+              <a
+                href="https://www.thoughtworks.com/en-au/radar/languages-and-frameworks/react-hook-form"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Thoughtworks Technology Radar
+              </a>{" "}
+              under Languages & Frameworks, adopted since 2025.
             </p>
           </div>
         </section>
       </div>
 
       <div className={containerStyles.centerContent}>
-        <h1 className={typographyStyles.h1}>The Community</h1>
+        <h2 className={typographyStyles.h1}>The Community</h2>
 
         <p className={typographyStyles.homeParagraph}>
           Build and drive by the community. On a mission to make every React
@@ -283,7 +345,7 @@ function HomePage() {
       />
 
       <section className={containerStyles.centerContent}>
-        <h1 className={typographyStyles.h1}>{home.findInteresting.heading}</h1>
+        <h2 className={typographyStyles.h1}>{home.findInteresting.heading}</h2>
         {home.findInteresting.description}
         <div
           className={buttonStyles.buttonsGroup}

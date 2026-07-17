@@ -1,10 +1,11 @@
 ---
 title: clearErrors
-description: Clear form errors
+description: Manually clear validation errors on fields.
+metaDescription: Manually clear validation errors for one field, an array of fields, or the entire React Hook Form without triggering re-validation.
 sidebar: apiLinks
 ---
 
-## \</> `clearErrors:` <TypeText>(name?: string | string[]) => void</TypeText>
+## \</> `clearErrors:` <TypeText>[UseFormClearErrors](/ts#UseFormClearErrors)</TypeText>
 
 This function can manually clear errors in the form.
 
@@ -32,18 +33,18 @@ This function can manually clear errors in the form.
 
 <Admonition type="important" title="Rules">
 
-- This will not affect the validation rules attached to each inputs.
-- This method doesn't affect validation rules or `isValid` formState.
+- This method does not affect the validation rules attached to inputs and does not
+  impact <code>formState.isValid</code>.
 
 </Admonition>
 
-**Examples**
+##### Examples
 
 ---
 
 <TabGroup buttonLabels={["TS", "JS"]}>
 
-```typescript sandbox="https://codesandbox.io/s/react-hook-form-v7-ts-clearerrors-w3ymx"
+```tsx sandbox="https://codesandbox.io/s/react-hook-form-v7-ts-clearerrors-w3ymx"
 import * as React from "react"
 import { useForm } from "react-hook-form"
 
